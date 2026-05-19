@@ -1,6 +1,6 @@
 import type { QeMode } from './types.js';
 
-export const PROMPT_VERSION = 'skill-v1-sanitized';
+export const PROMPT_VERSION = 'skill-v2-evidence-json';
 
 export const MCP_SERVER_NAME = 'qe-refinement';
 export const MCP_SERVER_VERSION = '1.0.0';

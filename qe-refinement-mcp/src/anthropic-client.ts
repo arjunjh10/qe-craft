@@ -1,9 +1,12 @@
 import Anthropic from '@anthropic-ai/sdk';
 import {
   ANTHROPIC_MAX_TOKENS,
+  ANTHROPIC_MAX_TOKENS_JSON,
   ANTHROPIC_MODEL,
+  ANTHROPIC_MODEL_JSON,
   ANTHROPIC_NO_TEXT_ERROR,
-  QE_ANALYSIS_SYSTEM_PROMPT,
+  buildSystemPrompt,
+  type PromptContext,
 } from './core/index.js';
 
 let client: Anthropic | undefined;
@@ -15,11 +18,15 @@ function getClient(): Anthropic {
   return client;
 }
 
-export async function runQeAnalysis(userMessage: string): Promise<string> {
+export async function runQeAnalysis(
+  userMessage: string,
+  promptContext: PromptContext,
+): Promise<string> {
+  const isJson = promptContext.outputFormat === 'json';
   const response = await getClient().messages.create({
-    model: ANTHROPIC_MODEL,
-    max_tokens: ANTHROPIC_MAX_TOKENS,
-    system: QE_ANALYSIS_SYSTEM_PROMPT,
+    model: isJson ? ANTHROPIC_MODEL_JSON : ANTHROPIC_MODEL,
+    max_tokens: isJson ? ANTHROPIC_MAX_TOKENS_JSON : ANTHROPIC_MAX_TOKENS,
+    system: buildSystemPrompt(promptContext),
     messages: [{ role: 'user', content: userMessage }],
   });
 

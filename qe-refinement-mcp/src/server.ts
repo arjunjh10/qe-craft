@@ -11,6 +11,7 @@ import {
   QE_TOOL_DEFINITIONS,
   buildUserMessage,
   contextSchema,
+  resolvePromptContext,
   regressionSchema,
   repoUatSchema,
   saveFailedFooter,
@@ -29,7 +30,12 @@ function toInputs(args: ToolArgs): QeToolInputs {
 
 async function handleQeTool(mode: QeMode, args: QeToolInputs) {
   const userMessage = buildUserMessage(mode, args);
-  let responseText = await runQeAnalysis(userMessage);
+  const promptContext = resolvePromptContext(mode, {
+    outputFormat: args.output_format,
+    relatedRepos: args.related_repos,
+    scopeUnknown: args.scope_unknown,
+  });
+  let responseText = await runQeAnalysis(userMessage, promptContext);
 
   if (args.save_file !== false) {
     const dateUtc = new Date().toISOString().slice(0, 10);

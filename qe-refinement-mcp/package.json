@@ -5,6 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
+    "test": "npm run build && node --test dist/core/prompts/build-system-prompt.test.js",
     "start": "node dist/server.js",
     "dev": "node --env-file=.env ./node_modules/tsx/dist/cli.mjs src/server.ts"
   },
