@@ -6,7 +6,11 @@ export const MCP_SERVER_NAME = 'qe-refinement';
 export const MCP_SERVER_VERSION = '1.0.0';
 
 export const ANTHROPIC_MODEL = 'claude-haiku-4-5-20251001';
+export const ANTHROPIC_MODEL_JSON = 'claude-sonnet-4-6';
 export const ANTHROPIC_MAX_TOKENS = 4000;
+export const ANTHROPIC_MAX_TOKENS_JSON = 8000;
+
+export const EVIDENCE_CONTEXT_MAX_CHARS = 10_000;
 
 export const ANALYSIS_DIR_SEGMENTS = ['docs', 'qe-analysis'] as const;
 export const ANALYSIS_FILENAME_PREFIX = 'qe-analysis';

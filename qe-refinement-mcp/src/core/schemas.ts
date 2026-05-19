@@ -1,6 +1,21 @@
 import { z } from 'zod';
+import { EVIDENCE_CONTEXT_MAX_CHARS } from './constants.js';
 
 export const saveFileSchema = z.boolean().default(true);
+
+export const outputFormatSchema = z
+  .enum(['markdown', 'json'])
+  .default('markdown');
+
+export const evidenceContextSchema = z
+  .string()
+  .max(EVIDENCE_CONTEXT_MAX_CHARS)
+  .optional();
+
+export const toolOutputFields = {
+  output_format: outputFormatSchema,
+  evidence_context: evidenceContextSchema,
+} as const;
 
 export const releaseSchema = z
   .object({
@@ -22,6 +37,7 @@ export const contextSchema = z.object({
   scope_unknown: z.boolean().optional(),
   completeness: z.string().optional(),
   save_file: saveFileSchema,
+  ...toolOutputFields,
 });
 
 export const uatSchema = contextSchema.extend({

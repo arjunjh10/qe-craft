@@ -16,6 +16,10 @@ export const QE_MODES = [
 
 export type QeMode = (typeof QE_MODES)[number];
 
+export type OutputFormat = 'markdown' | 'json';
+
+export type SaveArtifactKind = 'markdown' | 'json' | 'html' | 'raw';
+
 export interface QeRelease {
   type?: string;
   timeline?: string;
@@ -37,6 +41,20 @@ export interface QeToolInputs {
   repo_hints?: string;
   related_repos?: string;
   release?: QeRelease;
+  output_format?: OutputFormat;
+  evidence_context?: string;
+}
+
+export interface SaveArtifactEntry {
+  kind: SaveArtifactKind;
+  content: string;
+}
+
+export interface SaveArtifactsParams {
+  mode: QeMode;
+  title: string;
+  dateUtc: string;
+  entries: SaveArtifactEntry[];
 }
 
 export interface SaveAnalysisParams {
