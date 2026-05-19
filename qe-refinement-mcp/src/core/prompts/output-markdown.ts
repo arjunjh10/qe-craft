@@ -30,7 +30,7 @@ Include both scriptable checks and **exploration candidates** (seams, variabilit
 | 1 | <short scenario name> | <vary / observe / disprove> | <file:line, route, flag, or Assumed: …> | HIGH \\| MEDIUM \\| LOW | <one line> | API / UI / Integration |
 | 2 | ... | ... | ... | ... | ... | ... |
 
-Rules: one scenario per row; increment \`#\`; keep cells **brief**. If a cell needs a literal pipe, escape as \`\\|\`.
+Rules: one scenario per row; increment \`#\`; keep cells **brief**. **Evidence** and **Confidence** are mandatory per evidence rules. If a cell needs a literal pipe, escape as \`\\|\`.
 
 ## 6. Non-Functional Concerns
 - Performance
@@ -71,10 +71,10 @@ IF MODE = REGRESSION:
 - Any gaps in current coverage (cross-reference EXISTING COVERAGE)
 - For multi-unit scope: name **which repo/unit** should own each automation gap when known (ties to section **11** ledger)
 
-## 9. Out of Scope
-- What is explicitly NOT being tested in this analysis and why
-- Boundary conditions deferred to other tickets/teams
-- Per-repo **scan** status belongs in section **11**, not here—use this section for product/test boundaries only
+## 9. Out of Scope & Coverage Gaps
+- **Out of scope:** what is explicitly NOT being tested in this analysis and why; boundary conditions deferred to other tickets/teams
+- **Coverage gaps (optional bullets):** in-scope areas this run did **not** cover — missing automation, thin repo pass, or a \`blocked\` / \`not_scanned\` unit (tie to section **11** when relevant). Distinct from out-of-scope product boundaries.
+- Per-repo **scan** status belongs in section **11**, not here
 
 ## 10. Confidence Level
 - High | Medium | Low

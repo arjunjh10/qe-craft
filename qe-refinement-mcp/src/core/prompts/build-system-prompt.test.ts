@@ -10,7 +10,7 @@ import {
 const MARKDOWN_REFINEMENT_MAX_CHARS = 22_000;
 
 /** JSON path includes schema excerpt — allow larger ceiling. */
-const JSON_REPO_UAT_MAX_CHARS = 28_000;
+const JSON_REPO_UAT_MAX_CHARS = 32_000;
 
 describe('buildSystemPrompt', () => {
   it('markdown / REFINEMENT — omits json, repo-uat, and multi-repo chunks', () => {
@@ -32,6 +32,8 @@ describe('buildSystemPrompt', () => {
     const prompt = buildSystemPrompt(ctx);
     assert.ok(prompt.includes('Output Format (STRICT) — Markdown'));
     assert.ok(!prompt.includes('Output Format (STRICT) — JSON only'));
+    assert.ok(prompt.includes('Evidence over imagination'));
+    assert.ok(prompt.includes('| Evidence | Confidence |'));
     assert.ok(prompt.length <= MARKDOWN_REFINEMENT_MAX_CHARS);
   });
 
@@ -58,6 +60,9 @@ describe('buildSystemPrompt', () => {
     const prompt = buildSystemPrompt(ctx);
     assert.ok(prompt.includes('Return **ONLY** valid JSON'));
     assert.ok(!prompt.includes('Output Format (STRICT) — Markdown'));
+    assert.ok(prompt.includes('evidence_context'));
+    assert.ok(prompt.includes('coverageGaps'));
+    assert.ok(prompt.includes('repoCandidates'));
     assert.ok(prompt.length <= JSON_REPO_UAT_MAX_CHARS);
   });
 
@@ -73,6 +78,10 @@ describe('buildSystemPrompt', () => {
     assert.ok(ids.includes('multi-repo'));
     assert.ok(!ids.includes('output-markdown'));
     assert.ok(!ids.includes('repo-uat'));
+
+    const prompt = buildSystemPrompt(ctx);
+    assert.ok(prompt.includes('Section 11 — Markdown vs JSON'));
+    assert.ok(prompt.includes('repoLedger'));
   });
 
   it('never joins markdown and json output chunks in one prompt', () => {
