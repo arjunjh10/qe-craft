@@ -10,9 +10,19 @@ import {
   type QeReportEnvelope,
   type SaveAnalysisParams,
   type SaveAnalysisResult,
+  type SaveArtifactKind,
+  type SaveArtifactsParams,
 } from './core/index.js';
+import { renderReportHtml } from './report-renderer.js';
 
-const ARTIFACT_EXTENSIONS = ['.md', '.json', '.html', '.raw.txt'] as const;
+const ARTIFACT_EXTENSIONS: Record<SaveArtifactKind, string> = {
+  markdown: '.md',
+  json: '.json',
+  html: '.html',
+  raw: '.raw.txt',
+};
+
+const ARTIFACT_EXTENSIONS_LIST = Object.values(ARTIFACT_EXTENSIONS);
 
 export function getRepoRoot(): string {
   return resolve(process.env[ENV_REPO_ROOT] ?? process.cwd());
@@ -23,7 +33,9 @@ function artifactExists(dir: string, stem: string, ext: string): boolean {
 }
 
 function anyArtifactExists(dir: string, stem: string): boolean {
-  return ARTIFACT_EXTENSIONS.some((ext) => artifactExists(dir, stem, ext));
+  return ARTIFACT_EXTENSIONS_LIST.some((ext) =>
+    artifactExists(dir, stem, ext),
+  );
 }
 
 /** Resolve a collision-free stem shared by sibling artifact extensions. */
@@ -67,14 +79,36 @@ async function writeArtifact(
   return filePath.slice(repoRoot.length + 1);
 }
 
-export async function saveAnalysis(
-  params: SaveAnalysisParams,
-): Promise<SaveAnalysisResult> {
+export type SaveArtifactsResult =
+  | { stem: string; paths: Partial<Record<SaveArtifactKind, string>> }
+  | { error: string };
+
+/** Write one or more artifacts sharing the same collision-resolved stem. */
+export async function saveArtifacts(
+  params: SaveArtifactsParams,
+): Promise<SaveArtifactsResult> {
   try {
     const { dir, baseStem } = buildArtifactPaths(params);
     const stem = resolveAvailableStem(dir, baseStem);
+    const paths: Partial<Record<SaveArtifactKind, string>> = {};
 
-    const header = `# QE analysis — ${params.title}
+    for (const entry of params.entries) {
+      const ext = ARTIFACT_EXTENSIONS[entry.kind];
+      paths[entry.kind] = await writeArtifact(dir, stem, ext, entry.content);
+    }
+
+    return { stem, paths };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('saveArtifacts failed:', message);
+    return { error: message };
+  }
+}
+
+export async function saveAnalysis(
+  params: SaveAnalysisParams,
+): Promise<SaveAnalysisResult> {
+  const header = `# QE analysis — ${params.title}
 
 - **Mode:** ${params.mode}
 - **Generated:** ${params.dateUtc} (UTC)
@@ -82,18 +116,22 @@ export async function saveAnalysis(
 
 `;
 
-    const relativePath = await writeArtifact(
-      dir,
-      stem,
-      '.md',
-      header + params.body,
-    );
-    return { relativePath };
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error('saveAnalysis failed:', message);
-    return { error: message };
+  const result = await saveArtifacts({
+    mode: params.mode,
+    title: params.title,
+    dateUtc: params.dateUtc,
+    entries: [{ kind: 'markdown', content: header + params.body }],
+  });
+
+  if ('error' in result) {
+    return { error: result.error };
   }
+
+  const relativePath = result.paths.markdown;
+  if (!relativePath) {
+    return { error: 'markdown path missing after save' };
+  }
+  return { relativePath };
 }
 
 export async function saveRawFailure(params: {
@@ -102,42 +140,56 @@ export async function saveRawFailure(params: {
   dateUtc: string;
   rawText: string;
 }): Promise<SaveAnalysisResult> {
-  try {
-    const { dir, baseStem } = buildArtifactPaths(params);
-    const stem = resolveAvailableStem(dir, baseStem);
-    const relativePath = await writeArtifact(
-      dir,
-      stem,
-      '.raw.txt',
-      params.rawText,
-    );
-    return { relativePath };
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error('saveRawFailure failed:', message);
-    return { error: message };
+  const result = await saveArtifacts({
+    mode: params.mode,
+    title: params.title,
+    dateUtc: params.dateUtc,
+    entries: [{ kind: 'raw', content: params.rawText }],
+  });
+
+  if ('error' in result) {
+    return { error: result.error };
   }
+
+  const relativePath = result.paths.raw;
+  if (!relativePath) {
+    return { error: 'raw path missing after save' };
+  }
+  return { relativePath };
 }
+
+export type SaveReportEnvelopeResult =
+  | { stem: string; jsonPath: string; htmlPath: string }
+  | { error: string };
 
 export async function saveReportEnvelope(params: {
   mode: SaveAnalysisParams['mode'];
   title: string;
   dateUtc: string;
   envelope: QeReportEnvelope;
-}): Promise<SaveAnalysisResult & { stem?: string }> {
-  try {
-    const { dir, baseStem } = buildArtifactPaths(params);
-    const stem = resolveAvailableStem(dir, baseStem);
-    const relativePath = await writeArtifact(
-      dir,
-      stem,
-      '.json',
-      `${JSON.stringify(params.envelope, null, 2)}\n`,
-    );
-    return { relativePath, stem };
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error('saveReportEnvelope failed:', message);
-    return { error: message };
+}): Promise<SaveReportEnvelopeResult> {
+  const jsonContent = `${JSON.stringify(params.envelope, null, 2)}\n`;
+  const htmlContent = renderReportHtml(params.envelope);
+
+  const result = await saveArtifacts({
+    mode: params.mode,
+    title: params.title,
+    dateUtc: params.dateUtc,
+    entries: [
+      { kind: 'json', content: jsonContent },
+      { kind: 'html', content: htmlContent },
+    ],
+  });
+
+  if ('error' in result) {
+    return { error: result.error };
   }
+
+  const jsonPath = result.paths.json;
+  const htmlPath = result.paths.html;
+  if (!jsonPath || !htmlPath) {
+    return { error: 'json or html path missing after save' };
+  }
+
+  return { stem: result.stem, jsonPath, htmlPath };
 }

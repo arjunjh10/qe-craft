@@ -83,10 +83,11 @@ async function handleQeTool(mode: QeMode, args: QeToolInputs) {
         dateUtc,
         envelope: result.envelope,
       });
-      if ('relativePath' in saved) {
+      if ('jsonPath' in saved) {
         responseText = formatJsonReportSuccessSummary(
           result.envelope,
-          saved.relativePath,
+          saved.jsonPath,
+          saved.htmlPath,
         );
       } else {
         responseText += saveFailedFooter(saved.error);
