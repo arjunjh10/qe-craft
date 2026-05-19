@@ -1,7 +1,13 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { runQeAnalysis } from './anthropic-client.js';
-import { saveAnalysis } from './file-writer.js';
+import { saveAnalysis, saveRawFailure, saveReportEnvelope } from './file-writer.js';
+import {
+  formatJsonReportFailureMessage,
+  buildValidationContextFromInputs,
+  formatJsonReportSuccessSummary,
+  runJsonReportPipeline,
+} from './json-report-pipeline.js';
 import {
   API_KEY_MISSING_MESSAGE,
   CHAT_ONLY_FOOTER,
@@ -35,10 +41,65 @@ async function handleQeTool(mode: QeMode, args: QeToolInputs) {
     relatedRepos: args.related_repos,
     scopeUnknown: args.scope_unknown,
   });
+  const dateUtc = new Date().toISOString().slice(0, 10);
+  const saveFile = args.save_file !== false;
+
+  if (args.output_format === 'json') {
+    const validationContext = buildValidationContextFromInputs(args);
+    const result = await runJsonReportPipeline({
+      userMessage,
+      promptContext,
+      validationContext,
+    });
+
+    if (!result.ok) {
+      let responseText = formatJsonReportFailureMessage(result.errors);
+      if (saveFile) {
+        const saved = await saveRawFailure({
+          mode,
+          title: args.title,
+          dateUtc,
+          rawText: result.rawText,
+        });
+        if ('relativePath' in saved) {
+          responseText = formatJsonReportFailureMessage(
+            result.errors,
+            saved.relativePath,
+          );
+        } else {
+          responseText += saveFailedFooter(saved.error);
+        }
+      } else {
+        responseText += CHAT_ONLY_FOOTER;
+      }
+      return { content: [{ type: 'text' as const, text: responseText }] };
+    }
+
+    let responseText = formatJsonReportSuccessSummary(result.envelope);
+    if (saveFile) {
+      const saved = await saveReportEnvelope({
+        mode,
+        title: args.title,
+        dateUtc,
+        envelope: result.envelope,
+      });
+      if ('relativePath' in saved) {
+        responseText = formatJsonReportSuccessSummary(
+          result.envelope,
+          saved.relativePath,
+        );
+      } else {
+        responseText += saveFailedFooter(saved.error);
+      }
+    } else {
+      responseText += CHAT_ONLY_FOOTER;
+    }
+    return { content: [{ type: 'text' as const, text: responseText }] };
+  }
+
   let responseText = await runQeAnalysis(userMessage, promptContext);
 
-  if (args.save_file !== false) {
-    const dateUtc = new Date().toISOString().slice(0, 10);
+  if (saveFile) {
     const result = await saveAnalysis({
       mode,
       title: args.title,

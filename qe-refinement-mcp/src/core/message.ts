@@ -76,10 +76,18 @@ export function titleToSlug(title: string): string {
   return slug || SLUG_DEFAULT;
 }
 
+export function buildArtifactStem(
+  mode: QeMode,
+  slug: string,
+  dateUtc: string,
+): string {
+  return `${ANALYSIS_FILENAME_PREFIX}-${mode}-${slug}-${dateUtc}`;
+}
+
 export function buildAnalysisFilename(
   mode: QeMode,
   slug: string,
   dateUtc: string,
 ): string {
-  return `${ANALYSIS_FILENAME_PREFIX}-${mode}-${slug}-${dateUtc}.md`;
+  return `${buildArtifactStem(mode, slug, dateUtc)}.md`;
 }

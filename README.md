@@ -41,7 +41,7 @@ sequenceDiagram
 
 ## Quickstart
 
-**Requirements:** Node 20+ (for `node --env-file`).
+**Requirements:** Node 22+ (for `node --env-file` and built-in test runner).
 
 ```bash
 cd qe-refinement-mcp

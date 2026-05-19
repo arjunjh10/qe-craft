@@ -9,6 +9,8 @@ export {
   type PromptChunkId,
   type PromptContext,
 } from './prompt.js';
+export * from './parse-report.js';
 export * from './report-schema.js';
 export * from './schemas.js';
 export * from './types.js';
+export * from './validate-report.js';
