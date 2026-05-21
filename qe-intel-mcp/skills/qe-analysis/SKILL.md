@@ -1,6 +1,6 @@
 ---
 name: qe-analysis
-description: Performs structured, mode-based Senior QE analysis of a Jira story, feature, bug, or release. Default flow — explore repo in Cursor, analyze in-thread, then use qe-refinement-mcp deterministic tools (validate/save) when connected; no API key. Writes to docs/qe-analysis/ (Markdown and/or JSON+HTML) unless the user opts out. Use when the user provides input in the MODE/FEATURE/INPUT template below, or explicitly asks for QE refinement, UAT review, bug analysis, regression analysis, test plan, or risk analysis with a chosen MODE. Use for repository-first UAT when there is no ticket but a feature area or paths to explore (MODE REPO_UAT).
+description: Performs structured, mode-based Senior QE analysis of a Jira story, feature, bug, or release. Default flow — explore repo in Cursor, analyze in-thread, then use qe-intel-mcp deterministic tools (validate/save) when connected; no API key. Writes to docs/qe-analysis/ (Markdown and/or JSON+HTML) unless the user opts out. Use when the user provides input in the MODE/FEATURE/INPUT template below, or explicitly asks for QE refinement, UAT review, bug analysis, regression analysis, test plan, or risk analysis with a chosen MODE. Use for repository-first UAT when there is no ticket but a feature area or paths to explore (MODE REPO_UAT).
 ---
 
 <!--
@@ -22,7 +22,7 @@ Structured Senior QE analysis with explicit mode selection. Produces risk-scored
 
 **Invoking in Cursor:** Paste the templates below into chat. If your repo ships them, you can instead use a workspace slash command like **`/qe-analysis`** (often `.cursor/commands/qe-analysis.md`) and any companion wizard script under **`scripts/`**.
 
-When **qe-refinement-mcp** is connected, follow **Cursor + MCP runbook (default)** below — inference stays in Cursor; MCP only validates, guards, renders, and saves. **The MCP server does not read the repository**; only you (the Cursor agent) explore via grep/read and pass citations in tool arguments.
+When **qe-intel-mcp** is connected, follow **Cursor + MCP runbook (default)** below — inference stays in Cursor; MCP only validates, guards, renders, and saves. **The MCP server does not read the repository**; only you (the Cursor agent) explore via grep/read and pass citations in tool arguments.
 
 ## Cursor + MCP runbook (default)
 

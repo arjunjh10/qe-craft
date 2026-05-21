@@ -14,7 +14,7 @@ This page explains **what leaves your machine** when you use QE Intelligence Sui
 flowchart TB
   Dev[Developer]
   CursorLLM[IDE LLM e.g. Cursor]
-  MCP[qe-refinement-mcp]
+  MCP[qe-intel-mcp]
   Disk[docs/qe-analysis/ on disk]
   Dev -->|chat, repo read| CursorLLM
   Dev -->|MCP tool calls| MCP
@@ -30,7 +30,7 @@ flowchart TB
 
 ## What the MCP server does
 
-The stdio MCP server (`qe-refinement-mcp`) registers **deterministic** tools only:
+The stdio MCP server (`qe-intel-mcp`) registers **deterministic** tools only:
 
 | Tool | Purpose | Data leaves MCP process? |
 |------|---------|----------------------------|
@@ -91,7 +91,7 @@ When using the skill and MCP validate/save:
 4. **Assumed vs code** — Label hypotheses `Assumed:` so guards and reviewers can spot uncited claims.
 5. **Save locally on purpose** — `docs/qe-analysis/` files may be committed; review before `git push`.
 
-Evidence rules embedded in prompts match these practices; see `qe-refinement-mcp/src/core/prompts/evidence-rules.ts`.
+Evidence rules embedded in prompts match these practices; see `qe-intel-mcp/src/core/prompts/evidence-rules.ts`.
 
 ---
 
@@ -127,7 +127,7 @@ Playwright returns **page state**; QE MCP returns **validated artifacts**. In bo
 |----------|---------|
 | `REPO_ROOT` | Optional — target repo for `docs/qe-analysis/` (defaults to cwd) |
 
-See [`qe-refinement-mcp/.env.example`](../qe-refinement-mcp/.env.example).
+See [`qe-intel-mcp/.env.example`](../qe-intel-mcp/.env.example).
 
 ---
 
@@ -144,5 +144,5 @@ Questions or corrections: open an issue in the repository with the label `securi
 ## Related reading
 
 - [README](../README.md) — install, Playwright comparison, tool table
-- [`qe-refinement-mcp`](../qe-refinement-mcp/) — server source
+- [`qe-intel-mcp`](../qe-intel-mcp/) — server source
 - Sample outputs: [`docs/qe-analysis/samples/`](qe-analysis/samples/)

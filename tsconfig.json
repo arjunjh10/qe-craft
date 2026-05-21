@@ -1,10 +1,10 @@
 {
-  "extends": "./qe-refinement-mcp/tsconfig.json",
+  "extends": "./qe-intel-mcp/tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
-    "rootDir": "./qe-refinement-mcp/src",
-    "outDir": "./qe-refinement-mcp/dist"
+    "rootDir": "./qe-intel-mcp/src",
+    "outDir": "./qe-intel-mcp/dist"
   },
-  "include": ["qe-refinement-mcp/src/**/*.ts"],
-  "exclude": ["qe-refinement-mcp/dist", "qe-refinement-mcp/node_modules"]
+  "include": ["qe-intel-mcp/src/**/*.ts"],
+  "exclude": ["qe-intel-mcp/dist", "qe-intel-mcp/node_modules"]
 }

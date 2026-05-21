@@ -93,9 +93,9 @@ async function pathExists(path: string): Promise<boolean> {
 export function formatMcpJsonSnippet(repoRootPlaceholder = '/absolute/path/to/your/target-repo'): string {
   return `{
   "mcpServers": {
-    "qe-refinement": {
+    "qe-intel": {
       "command": "npx",
-      "args": ["-y", "qe-refinement-mcp@latest"],
+      "args": ["-y", "qe-intel-mcp@latest"],
       "env": {
         "REPO_ROOT": "${repoRootPlaceholder}"
       }
@@ -107,7 +107,7 @@ export function formatMcpJsonSnippet(repoRootPlaceholder = '/absolute/path/to/yo
 export async function executeInit(plan: InitPlan, options: InitOptions): Promise<void> {
   if (!(await pathExists(plan.sourceSkillPath))) {
     throw new Error(
-      `Bundled skill not found at ${plan.sourceSkillPath}. Reinstall qe-refinement-mcp.`,
+      `Bundled skill not found at ${plan.sourceSkillPath}. Reinstall qe-intel-mcp.`,
     );
   }
 
@@ -136,7 +136,7 @@ export function printInitSuccess(plan: InitPlan): void {
     plan.scope === 'project' ? plan.project! : '/absolute/path/to/your/target-repo';
 
   console.log(`Installed qe-analysis skill (${plan.scope})`);
-  console.log(`  package: qe-refinement-mcp@${plan.packageVersion}`);
+  console.log(`  package: qe-intel-mcp@${plan.packageVersion}`);
   console.log(`  prompt:  ${plan.promptVersion}`);
   console.log(`  path:    ${plan.destSkillPath}`);
   console.log('');
@@ -152,10 +152,10 @@ export function printInitSuccess(plan: InitPlan): void {
 }
 
 export function printInitHelp(): void {
-  console.log(`qe-refinement-mcp init — install the qe-analysis Cursor skill from this package
+  console.log(`qe-intel-mcp init — install the qe-analysis Cursor skill from this package
 
 Usage:
-  npx qe-refinement-mcp init [options]
+  npx qe-intel-mcp init [options]
 
 Options:
   --project <path>  Install into <path>/.cursor/skills/qe-analysis/ (team repos)

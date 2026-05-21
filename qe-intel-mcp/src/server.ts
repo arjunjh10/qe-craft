@@ -80,13 +80,13 @@ async function main(): Promise<void> {
   registerDeterministicTools(server);
 
   console.error(
-    'qe-refinement MCP: deterministic tools ready (qe_get_system_prompt, qe_validate_report, qe_save_report, qe_save_markdown, qe_get_json_schema).',
+    'qe-intel MCP: deterministic tools ready (qe_get_system_prompt, qe_validate_report, qe_save_report, qe_save_markdown, qe_get_json_schema).',
   );
 
   await server.connect(new StdioServerTransport());
 }
 
 main().catch((err) => {
-  console.error('qe-refinement MCP server failed:', err);
+  console.error('qe-intel MCP server failed:', err);
   process.exit(1);
 });

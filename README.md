@@ -13,13 +13,13 @@ Structured Senior QE analysis in Cursor: backlog refinement, sprint UAT, ticketl
 | What MCP does | Browser / DOM tools | Validate JSON, evidence guards, HTML, local save |
 | Who writes the QE narrative | IDE agent | **IDE agent** (`qe-analysis` skill) |
 
-**Install story:** Use the **`qe-analysis` skill** in Cursor for analysis and repo exploration. Connect **`qe-refinement-mcp`** for the same artifact contract (schema, guards, tabbed HTML) **without** a second cloud LLM call from the server.
+**Install story:** Use the **`qe-analysis` skill** in Cursor for analysis and repo exploration. Connect **QE Intel MCP** (`qe-intel-mcp`) for the same artifact contract (schema, guards, tabbed HTML) **without** a second cloud LLM call from the server.
 
 **Data handling:** See **[`docs/data-handling.md`](docs/data-handling.md)** — what stays local vs what goes to your IDE provider.
 
 | Layer | What it is |
 |-------|------------|
-| **This repo** | `qe-refinement-mcp` — stdio MCP server, sanitized system prompt (`PROMPT_VERSION`: `skill-v2-evidence-json`), writes to `docs/qe-analysis/` |
+| **This repo** | `qe-intel-mcp` — stdio MCP server, sanitized system prompt (`PROMPT_VERSION`: `skill-v2-evidence-json`), writes to `docs/qe-analysis/` |
 | **Analysis (recommended)** | Cursor **`qe-analysis` skill** — run analysis in your IDE thread with native repo exploration |
 | **MCP server** | Deterministic tools: prompt/schema helpers, validate, envelope, render, save — **no API key** |
 | **Not included** | Hosted MCP endpoint, shared API keys, in-server LLM calls, or automatic repo crawling (the IDE agent explores; MCP does not read the tree on its own) |
@@ -44,7 +44,7 @@ There is **no** in-server analysis path (no `qe_uat`-style one-shot generation, 
 sequenceDiagram
   participant Cursor
   participant Skill as qe_analysis_skill
-  participant MCP as qe_refinement_mcp
+  participant MCP as qe_intel_mcp
   participant FS as docs_qe_analysis
 
   Cursor->>Skill: repo exploration + analysis
@@ -59,14 +59,14 @@ sequenceDiagram
 
 ### Install via npx (published package)
 
-After [`qe-refinement-mcp` is on npm](https://www.npmjs.com/package/qe-refinement-mcp), add to `~/.cursor/mcp.json`:
+After [`qe-intel-mcp` is on npm](https://www.npmjs.com/package/qe-intel-mcp), add to `~/.cursor/mcp.json`:
 
 ```json
 {
   "mcpServers": {
-    "qe-refinement": {
+    "qe-intel": {
       "command": "npx",
-      "args": ["-y", "qe-refinement-mcp@latest"],
+      "args": ["-y", "qe-intel-mcp@latest"],
       "env": {
         "REPO_ROOT": "/ABSOLUTE/PATH/to/your/target-repo"
       }
@@ -77,22 +77,24 @@ After [`qe-refinement-mcp` is on npm](https://www.npmjs.com/package/qe-refinemen
 
 Restart Cursor. **No API keys.**
 
+**Migrating from `qe-refinement`:** rename the MCP key to `qe-intel` and use `qe-intel-mcp@latest` in `args`. Tool names (`qe_validate_report`, etc.) are unchanged.
+
 ### Install the skill (`init`)
 
 ```bash
-npx qe-refinement-mcp init
-# team repo: npx qe-refinement-mcp init --project /absolute/path/to/repo
-# preview:  npx qe-refinement-mcp init --dry-run
+npx qe-intel-mcp init
+# team repo: npx qe-intel-mcp init --project /absolute/path/to/repo
+# preview:  npx qe-intel-mcp init --dry-run
 ```
 
 Copies the bundled **`qe-analysis`** skill into `~/.cursor/skills/qe-analysis/` (or the project’s `.cursor/skills/`). Restart Cursor again.
 
-**Example prompts** (skill + MCP): [`qe-refinement-mcp/README.md`](qe-refinement-mcp/README.md#invoke-qe-via-skill--mcp-examples).
+**Example prompts** (skill + MCP): [`qe-intel-mcp/README.md`](qe-intel-mcp/README.md#invoke-qe-via-skill--mcp-examples).
 
 ### Install from source (this repo)
 
 ```bash
-cd qe-refinement-mcp
+cd qe-intel-mcp
 npm install
 npm run build
 test -f dist/server.js && echo "Build OK"
@@ -107,10 +109,10 @@ Use **absolute paths** on your machine. **No API keys.**
 ```json
 {
   "mcpServers": {
-    "qe-refinement": {
+    "qe-intel": {
       "command": "node",
       "args": [
-        "/ABSOLUTE/PATH/qe-intelligence-suite/qe-refinement-mcp/dist/cli.js"
+        "/ABSOLUTE/PATH/qe-intelligence-suite/qe-intel-mcp/dist/cli.js"
       ],
       "env": {
         "REPO_ROOT": "/ABSOLUTE/PATH/to/your/target-repo"
@@ -122,12 +124,12 @@ Use **absolute paths** on your machine. **No API keys.**
 
 Restart Cursor after saving.
 
-Publish checklist for maintainers: [`qe-refinement-mcp/README.md`](qe-refinement-mcp/README.md#publishing-maintainers).
+Publish checklist for maintainers: [`qe-intel-mcp/README.md`](qe-intel-mcp/README.md#publishing-maintainers).
 
 **Local dev** (stdio):
 
 ```bash
-cd qe-refinement-mcp && npm run dev
+cd qe-intel-mcp && npm run dev
 ```
 
 ### Hybrid agent runbook (skill + MCP)
@@ -161,12 +163,12 @@ Collision suffix (`-2`, `-3`) applies to the **stem** before extension; sibling 
 Regenerate committed v2 samples after schema or renderer changes:
 
 ```bash
-cd qe-refinement-mcp && npm run build && node scripts/write-v2-samples.mjs
+cd qe-intel-mcp && npm run build && node scripts/write-v2-samples.mjs
 ```
 
 ### Skill vs MCP prompt (v1 / v2 divergence)
 
-| | Cursor **`qe-analysis` skill** | **`qe-refinement-mcp`** |
+| | Cursor **`qe-analysis` skill** | **`qe-intel-mcp`** |
 |--|-------------------------------|-------------------------|
 | Primary deliverable | Markdown sections 1–11 (default) | Same contract; optional **JSON envelope** + tabbed **HTML** |
 | Repo access | IDE grep/read | **None** — only `evidence_context` and other tool args you pass |
@@ -175,7 +177,7 @@ cd qe-refinement-mcp && npm run build && node scripts/write-v2-samples.mjs
 | Multi-repo / REPO_UAT | Sections 11a–11b, GO/NO-GO in prose | JSON: `repoCandidates`, `repoLedger`, `goNoGo`, `repoSelfCritique`, `droppedScenarios` |
 | Auto `.md` from JSON | N/A | **Not** generated in v2 — one renderer path per format |
 
-Keep the skill and MCP chunks aligned when you change analysis rules: update `~/.cursor/skills/qe-analysis/SKILL.md`, mirror in `qe-refinement-mcp/src/core/prompts/`, and bump `PROMPT_VERSION` in `src/core/constants.ts`. Portfolio samples may still show v1 Markdown under `samples/` while v2 JSON/HTML live under `samples/v2/`.
+Keep the skill and MCP chunks aligned when you change analysis rules: update `~/.cursor/skills/qe-analysis/SKILL.md`, mirror in `qe-intel-mcp/src/core/prompts/`, and bump `PROMPT_VERSION` in `src/core/constants.ts`. Portfolio samples may still show v1 Markdown under `samples/` while v2 JSON/HTML live under `samples/v2/`.
 
 ## Sample outputs
 
@@ -199,11 +201,11 @@ Open the `.html` files in a browser for the tabbed report (includes `validationW
 |----------|-----------|---------|
 | `REPO_ROOT` | No | Absolute path to the repo where `docs/qe-analysis/` should be written (defaults to MCP process cwd) |
 
-There are **no** `ANTHROPIC_MODEL`, `ANTHROPIC_MAX_TOKENS`, or API-key variables for this server — model choice and token limits are entirely your **IDE agent’s** provider. See [`.env.example`](qe-refinement-mcp/.env.example).
+There are **no** `ANTHROPIC_MODEL`, `ANTHROPIC_MAX_TOKENS`, or API-key variables for this server — model choice and token limits are entirely your **IDE agent’s** provider. See [`.env.example`](qe-intel-mcp/.env.example).
 
 ## Prompt hygiene
 
-Prompts and the bundled skill should stay **vendor-neutral** (no employer-specific product names). When the skill changes, update `skills/qe-analysis/SKILL.md`, mirror rules in `qe-refinement-mcp/src/core/prompts/`, run `npm run sync-skill` if edited in `~/.cursor/skills/`, and bump `PROMPT_VERSION` in `src/core/constants.ts`.
+Prompts and the bundled skill should stay **vendor-neutral** (no employer-specific product names). When the skill changes, update `skills/qe-analysis/SKILL.md`, mirror rules in `qe-intel-mcp/src/core/prompts/`, run `npm run sync-skill` if edited in `~/.cursor/skills/`, and bump `PROMPT_VERSION` in `src/core/constants.ts`.
 
 ## Relation to portfolio demos
 

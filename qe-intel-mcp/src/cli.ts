@@ -20,13 +20,13 @@ if (subcommand === undefined) {
 }
 
 function printCliHelp(): void {
-  console.log(`qe-refinement-mcp — Senior QE MCP server (stdio) + setup CLI
+  console.log(`qe-intel-mcp — Senior QE MCP server (stdio) + setup CLI
 
 Usage:
-  qe-refinement-mcp              Start MCP server (default for Cursor)
-  qe-refinement-mcp init [opts]  Install qe-analysis Cursor skill from this package
-  qe-refinement-mcp help         Show this help
+  qe-intel-mcp              Start MCP server (default for Cursor)
+  qe-intel-mcp init [opts]  Install qe-analysis Cursor skill from this package
+  qe-intel-mcp help         Show this help
 
-Run "qe-refinement-mcp init --help" for init options.
+Run "qe-intel-mcp init --help" for init options.
 `);
 }

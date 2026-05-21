@@ -1,6 +1,6 @@
 /**
  * Writes committed v2 sample envelope JSON + tabbed HTML under docs/qe-analysis/samples/v2/.
- * Run from qe-refinement-mcp after build: node scripts/write-v2-samples.mjs
+ * Run from qe-intel-mcp after build: node scripts/write-v2-samples.mjs
  */
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';

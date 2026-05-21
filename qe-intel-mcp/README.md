@@ -1,4 +1,4 @@
-# qe-refinement-mcp
+# QE Intel MCP (`qe-intel-mcp`)
 
 stdio MCP server for **Senior QE analysis** in Cursor: validate JSON reports, apply evidence guards, render tabbed HTML, and save artifacts under `docs/qe-analysis/`. **No API key** — inference runs in your IDE agent.
 
@@ -16,9 +16,9 @@ Pair with the bundled **`qe-analysis` skill** (installed via `init`) so the agen
 ```json
 {
   "mcpServers": {
-    "qe-refinement": {
+    "qe-intel": {
       "command": "npx",
-      "args": ["-y", "qe-refinement-mcp@latest"],
+      "args": ["-y", "qe-intel-mcp@latest"],
       "env": {
         "REPO_ROOT": "/absolute/path/to/your/target-repo"
       }
@@ -30,30 +30,32 @@ Pair with the bundled **`qe-analysis` skill** (installed via `init`) so the agen
 ### 2. Skill — install from this package
 
 ```bash
-npx qe-refinement-mcp init
+npx qe-intel-mcp init
 ```
 
 Team repo (commit skill in git):
 
 ```bash
-npx qe-refinement-mcp init --project /absolute/path/to/your-repo
+npx qe-intel-mcp init --project /absolute/path/to/your-repo
 ```
 
 Preview only:
 
 ```bash
-npx qe-refinement-mcp init --dry-run
+npx qe-intel-mcp init --dry-run
 ```
 
 Upgrade skill after a new MCP release:
 
 ```bash
-npx qe-refinement-mcp@latest init --force
+npx qe-intel-mcp@latest init --force
 ```
 
 ### 3. Restart Cursor
 
-Confirm **qe-refinement** MCP is connected and the **qe-analysis** skill is listed.
+**Migrating from `qe-refinement`:** use MCP key `qe-intel` and package `qe-intel-mcp@latest` in `args` (tool names unchanged).
+
+Confirm **qe-intel** MCP is connected and the **qe-analysis** skill is listed.
 
 | Variable | Required? | Purpose |
 |----------|-----------|---------|
@@ -80,7 +82,7 @@ API:
 EXISTING COVERAGE:
 - E2E happy-path checkout without promo
 
-Use the qe-analysis skill and qe-refinement MCP. output_format=markdown. Save under docs/qe-analysis/.
+Use the qe-analysis skill and QE Intel MCP. output_format=markdown. Save under docs/qe-analysis/.
 ```
 
 **What the agent should do:** explore repo → optional `qe_get_system_prompt` (`mode: REFINEMENT`, `output_format: markdown`) → write sections ## 1–11 → `qe_save_markdown`.
@@ -97,7 +99,7 @@ RELEASE:
 - Type: minor
 - Rollback: revert checkout-api flag checkout.promo_v2
 
-Use qe-refinement MCP with output_format=json. Build evidence_context from the repo. Validate and save envelope + HTML.
+Use QE Intel MCP with output_format=json. Build evidence_context from the repo. Validate and save envelope + HTML.
 ```
 
 **What the agent should do:** explore → `qe_get_system_prompt` (`mode: UAT`, `output_format: json`) + `qe_get_json_schema` → emit JSON → `qe_validate_report` (with `evidence_context`) → `qe_save_report`.
@@ -121,7 +123,7 @@ Use the skill runbook. JSON output. Do not cite paths you did not read.
 ### Explicit MCP tool sequence (if the agent skips tools)
 
 ```text
-Run Senior QE REFINEMENT using qe-refinement MCP in order:
+Run Senior QE REFINEMENT using QE Intel MCP in order:
 1. qe_get_system_prompt — mode REFINEMENT, output_format json
 2. qe_get_json_schema
 3. Explore the repo; build evidence_context (path:line bullets)
@@ -147,7 +149,7 @@ Reply with paths and validationWarnings.
 
 ```bash
 git clone https://github.com/arjunjh10/qe-intelligence-suite.git
-cd qe-intelligence-suite/qe-refinement-mcp
+cd qe-intelligence-suite/qe-intel-mcp
 npm install
 npm run check
 npm test
@@ -158,7 +160,7 @@ Local MCP (no npx):
 ```json
 {
   "command": "node",
-  "args": ["/ABSOLUTE/PATH/qe-intelligence-suite/qe-refinement-mcp/dist/cli.js"],
+  "args": ["/ABSOLUTE/PATH/qe-intelligence-suite/qe-intel-mcp/dist/cli.js"],
   "env": { "REPO_ROOT": "/ABSOLUTE/PATH/to/target-repo" }
 }
 ```
