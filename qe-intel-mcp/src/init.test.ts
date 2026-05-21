@@ -22,14 +22,15 @@ describe('parseInitArgs', () => {
 });
 
 describe('discoverSkillTargets', () => {
-  it('finds six skills excluding shared/', async () => {
+  it('finds seven skills excluding shared/', async () => {
     const root = getPackageRoot();
     const targets = await discoverSkillTargets(root, { dryRun: false, force: false });
     const names = targets.map((t) => t.skillName).sort();
     assert.ok(names.includes('qe-analysis'));
     assert.ok(names.includes('qe-refinement'));
+    assert.ok(names.includes('qe-automate'));
     assert.ok(names.includes('qe-uat-gate'));
-    assert.equal(targets.length, 6);
+    assert.equal(targets.length, 7);
   });
 });
 

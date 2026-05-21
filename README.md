@@ -8,14 +8,14 @@
 - **No API key in MCP config** — QE reasoning stays in your IDE agent (skills + phased playbook).
 - **Coach-first** — better QE in chat by default; files only when you ask.
 
-**Install story:** `npx qe-intel-mcp init` (six skills) + MCP `qe-intel`. Agent calls **`qe_intel_refinement`** (etc.) first — coach output in chat by default; files only when asked.
+**Install story:** `npx qe-intel-mcp init` (seven skills) + MCP `qe-intel`. Agent calls **`qe_intel_refinement`** (etc.) first — coach output in chat by default; files only when asked.
 
 **Data handling:** See **[`docs/data-handling.md`](docs/data-handling.md)** — what stays local vs what goes to your IDE provider.
 
 | Layer | What it is |
 |-------|------------|
 | **This repo** | `qe-intel-mcp` — `qe_intel_*` guided runs (`PROMPT_VERSION`: `intel-v1-coach`), optional artifacts under `docs/qe-analysis/` |
-| **Skills** | Router `qe-analysis` + five mode skills — trigger the right `qe_intel_*` tool |
+| **Skills** | Router `qe-analysis` + five mode skills + `qe-automate` for test writing |
 | **MCP server** | Phased playbook in one call; repo scan hints under `REPO_ROOT`; Phase E validate/save — **no API key** |
 | **Not included** | In-server LLM, API keys, hosted inference |
 
@@ -91,7 +91,7 @@ npx qe-intel-mcp init
 # preview:  npx qe-intel-mcp init --dry-run
 ```
 
-Copies **six skills** into `~/.cursor/skills/` (or project `.cursor/skills/`). Restart Cursor again.
+Copies **seven skills** into `~/.cursor/skills/` (or project `.cursor/skills/`). Restart Cursor again.
 
 **Example prompts:** [`qe-intel-mcp/README.md`](qe-intel-mcp/README.md).
 

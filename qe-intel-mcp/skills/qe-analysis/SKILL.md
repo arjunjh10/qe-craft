@@ -14,6 +14,7 @@ description: Router for QE Intelligence — picks the right qe_intel_* guided ru
 | No ticket, explore repo | `qe-repo-charter` | `qe_intel_repo_uat` |
 | Production bug | `qe-incident` | `qe_intel_bug` |
 | PR / what to retest | `qe-regression-impact` | `qe_intel_regression` |
+| Write or improve automated tests | `qe-automate` | — (no MCP tool) |
 
 ## Default flow
 

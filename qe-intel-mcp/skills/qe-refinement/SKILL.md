@@ -29,4 +29,4 @@ RELATED_REPOS (optional)
 
 ## Not for
 
-Release GO/NO-GO (`qe-uat-gate`), incidents, or writing test code.
+Release GO/NO-GO (`qe-uat-gate`), incidents, or writing test code (`qe-automate`).

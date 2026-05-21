@@ -2,7 +2,7 @@
 
 **Guided QE in your copilot** — phased playbooks for people who are not full-time QEs. **No API key.** Inference stays in Cursor; MCP returns the director’s script and optional artifact save.
 
-Pair with **six Cursor skills** (`npx qe-intel-mcp init`): router + five mode skills.
+Pair with **seven Cursor skills** (`npx qe-intel-mcp init`): router + five mode skills + test automation.
 
 ## Requirements
 
@@ -35,7 +35,7 @@ npx qe-intel-mcp init
 npx qe-intel-mcp@latest init --force   # upgrade
 ```
 
-Installs: `qe-analysis`, `qe-refinement`, `qe-uat-gate`, `qe-repo-charter`, `qe-incident`, `qe-regression-impact`.
+Installs: `qe-analysis`, `qe-refinement`, `qe-uat-gate`, `qe-repo-charter`, `qe-incident`, `qe-regression-impact`, `qe-automate`.
 
 ### 3. Restart Cursor
 

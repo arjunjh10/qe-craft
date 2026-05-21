@@ -205,7 +205,7 @@ Options:
   --dry-run         Print paths only; do not write files
   -h, --help        Show this help
 
-Installs: qe-analysis (router), qe-refinement, qe-uat-gate, qe-repo-charter, qe-incident, qe-regression-impact
+Installs: qe-analysis (router), qe-refinement, qe-uat-gate, qe-repo-charter, qe-incident, qe-regression-impact, qe-automate
 
 Does not edit mcp.json — copy the snippet printed after a successful install.
 `);
