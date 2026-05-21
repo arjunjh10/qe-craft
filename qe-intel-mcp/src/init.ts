@@ -1,12 +1,12 @@
-import { copyFile, mkdir, readFile, access } from 'node:fs/promises';
+import { copyFile, mkdir, readdir, readFile, access } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROMPT_VERSION } from './core/constants.js';
 
-const SKILL_DIR_NAME = 'qe-analysis';
 const SKILL_FILE = 'SKILL.md';
+const SHARED_DIR = 'shared';
 
 export type InitOptions = {
   dryRun: boolean;
@@ -14,9 +14,14 @@ export type InitOptions = {
   project?: string;
 };
 
-export type InitPlan = {
+export type SkillInstallTarget = {
+  skillName: string;
   sourceSkillPath: string;
   destSkillPath: string;
+};
+
+export type InitPlan = {
+  targets: SkillInstallTarget[];
   scope: 'global' | 'project';
   project?: string;
   packageVersion: string;
@@ -54,13 +59,43 @@ export function parseInitArgs(argv: string[]): InitOptions {
   return options;
 }
 
+export async function discoverSkillTargets(
+  packageRoot: string,
+  options: InitOptions,
+): Promise<SkillInstallTarget[]> {
+  const skillsRoot = join(packageRoot, 'skills');
+  const entries = await readdir(skillsRoot, { withFileTypes: true });
+  const targets: SkillInstallTarget[] = [];
+
+  const skillsBase = options.project
+    ? join(options.project, '.cursor', 'skills')
+    : join(homedir(), '.cursor', 'skills');
+
+  for (const ent of entries) {
+    if (!ent.isDirectory() || ent.name === SHARED_DIR) continue;
+    const sourceSkillPath = join(skillsRoot, ent.name, SKILL_FILE);
+    try {
+      await access(sourceSkillPath, constants.F_OK);
+    } catch {
+      continue;
+    }
+    targets.push({
+      skillName: ent.name,
+      sourceSkillPath,
+      destSkillPath: join(skillsBase, ent.name, SKILL_FILE),
+    });
+  }
+
+  targets.sort((a, b) => a.skillName.localeCompare(b.skillName));
+  if (targets.length === 0) {
+    throw new Error(`No skills found under ${skillsRoot}`);
+  }
+  return targets;
+}
+
 export async function buildInitPlan(options: InitOptions): Promise<InitPlan> {
   const packageRoot = getPackageRoot();
-  const sourceSkillPath = join(packageRoot, 'skills', SKILL_DIR_NAME, SKILL_FILE);
-
-  const destSkillPath = options.project
-    ? join(options.project, '.cursor', 'skills', SKILL_DIR_NAME, SKILL_FILE)
-    : join(homedir(), '.cursor', 'skills', SKILL_DIR_NAME, SKILL_FILE);
+  const targets = await discoverSkillTargets(packageRoot, options);
 
   let packageVersion = 'unknown';
   try {
@@ -72,8 +107,7 @@ export async function buildInitPlan(options: InitOptions): Promise<InitPlan> {
   }
 
   return {
-    sourceSkillPath,
-    destSkillPath,
+    targets,
     scope: options.project ? 'project' : 'global',
     project: options.project,
     packageVersion,
@@ -105,40 +139,49 @@ export function formatMcpJsonSnippet(repoRootPlaceholder = '/absolute/path/to/yo
 }
 
 export async function executeInit(plan: InitPlan, options: InitOptions): Promise<void> {
-  if (!(await pathExists(plan.sourceSkillPath))) {
-    throw new Error(
-      `Bundled skill not found at ${plan.sourceSkillPath}. Reinstall qe-intel-mcp.`,
-    );
-  }
+  for (const target of plan.targets) {
+    if (!(await pathExists(target.sourceSkillPath))) {
+      throw new Error(
+        `Bundled skill not found at ${target.sourceSkillPath}. Reinstall qe-intel-mcp.`,
+      );
+    }
 
-  const destExists = await pathExists(plan.destSkillPath);
+    const destExists = await pathExists(target.destSkillPath);
 
-  if (destExists && !options.force && !options.dryRun) {
-    throw new Error(
-      `Skill already exists: ${plan.destSkillPath}\nRe-run with --force to overwrite, or use --dry-run to preview.`,
-    );
+    if (destExists && !options.force && !options.dryRun) {
+      throw new Error(
+        `Skill already exists: ${target.destSkillPath}\nRe-run with --force to overwrite, or use --dry-run to preview.`,
+      );
+    }
   }
 
   if (options.dryRun) {
-    console.log('[dry-run] Would install qe-analysis skill:');
-    console.log(`  from: ${plan.sourceSkillPath}`);
-    console.log(`  to:   ${plan.destSkillPath}`);
+    console.log('[dry-run] Would install QE Intel skills:');
+    for (const target of plan.targets) {
+      console.log(`  ${target.skillName}`);
+      console.log(`    from: ${target.sourceSkillPath}`);
+      console.log(`    to:   ${target.destSkillPath}`);
+    }
     console.log(`  scope: ${plan.scope}`);
     return;
   }
 
-  await mkdir(dirname(plan.destSkillPath), { recursive: true });
-  await copyFile(plan.sourceSkillPath, plan.destSkillPath);
+  for (const target of plan.targets) {
+    await mkdir(dirname(target.destSkillPath), { recursive: true });
+    await copyFile(target.sourceSkillPath, target.destSkillPath);
+  }
 }
 
 export function printInitSuccess(plan: InitPlan): void {
   const repoHint =
     plan.scope === 'project' ? plan.project! : '/absolute/path/to/your/target-repo';
 
-  console.log(`Installed qe-analysis skill (${plan.scope})`);
+  console.log(`Installed ${plan.targets.length} QE Intel skills (${plan.scope})`);
   console.log(`  package: qe-intel-mcp@${plan.packageVersion}`);
   console.log(`  prompt:  ${plan.promptVersion}`);
-  console.log(`  path:    ${plan.destSkillPath}`);
+  for (const t of plan.targets) {
+    console.log(`  - ${t.skillName} → ${t.destSkillPath}`);
+  }
   console.log('');
   console.log('Next steps:');
   console.log('  1. Add MCP to ~/.cursor/mcp.json (or project .cursor/mcp.json):');
@@ -146,24 +189,23 @@ export function printInitSuccess(plan: InitPlan): void {
   console.log(formatMcpJsonSnippet(repoHint));
   console.log('');
   console.log('  2. Restart Cursor.');
-  console.log('  3. In chat, paste a MODE / FEATURE block (see skill) — the agent should');
-  console.log('     follow the runbook and call qe_get_system_prompt, qe_validate_report,');
-  console.log('     qe_save_report when output_format=json.');
+  console.log('  3. In chat, describe your QE task — agent calls qe_intel_* (e.g. qe_intel_refinement).');
+  console.log('     Coach output in chat is the default; save artifacts only when asked.');
 }
 
 export function printInitHelp(): void {
-  console.log(`qe-intel-mcp init — install the qe-analysis Cursor skill from this package
+  console.log(`qe-intel-mcp init — install QE Intel Cursor skills from this package
 
 Usage:
   npx qe-intel-mcp init [options]
 
 Options:
-  --project <path>  Install into <path>/.cursor/skills/qe-analysis/ (team repos)
-  --force           Overwrite existing SKILL.md
+  --project <path>  Install into <path>/.cursor/skills/<skill-name>/ (team repos)
+  --force           Overwrite existing SKILL.md files
   --dry-run         Print paths only; do not write files
   -h, --help        Show this help
 
-Global default (no --project): ~/.cursor/skills/qe-analysis/SKILL.md
+Installs: qe-analysis (router), qe-refinement, qe-uat-gate, qe-repo-charter, qe-incident, qe-regression-impact
 
 Does not edit mcp.json — copy the snippet printed after a successful install.
 `);

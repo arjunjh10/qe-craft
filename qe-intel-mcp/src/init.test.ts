@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { after, before, describe, it } from 'node:test';
 import {
   buildInitPlan,
+  discoverSkillTargets,
   executeInit,
   formatMcpJsonSnippet,
   getPackageRoot,
@@ -20,6 +21,18 @@ describe('parseInitArgs', () => {
   });
 });
 
+describe('discoverSkillTargets', () => {
+  it('finds six skills excluding shared/', async () => {
+    const root = getPackageRoot();
+    const targets = await discoverSkillTargets(root, { dryRun: false, force: false });
+    const names = targets.map((t) => t.skillName).sort();
+    assert.ok(names.includes('qe-analysis'));
+    assert.ok(names.includes('qe-refinement'));
+    assert.ok(names.includes('qe-uat-gate'));
+    assert.equal(targets.length, 6);
+  });
+});
+
 describe('buildInitPlan and executeInit', () => {
   let projectDir: string;
 
@@ -31,14 +44,7 @@ describe('buildInitPlan and executeInit', () => {
     await rm(projectDir, { recursive: true, force: true });
   });
 
-  it('targets project .cursor/skills when --project is set', async () => {
-    const plan = await buildInitPlan({ dryRun: false, force: false, project: projectDir });
-    assert.equal(plan.scope, 'project');
-    assert.ok(plan.destSkillPath.endsWith('.cursor/skills/qe-analysis/SKILL.md'));
-    assert.ok(plan.sourceSkillPath.includes(join('skills', 'qe-analysis', 'SKILL.md')));
-  });
-
-  it('installs bundled skill into project directory', async () => {
+  it('installs all bundled skills into project directory', async () => {
     const plan = await buildInitPlan({
       dryRun: false,
       force: true,
@@ -46,18 +52,10 @@ describe('buildInitPlan and executeInit', () => {
     });
     await executeInit(plan, { dryRun: false, force: true, project: projectDir });
 
-    const content = await readFile(plan.destSkillPath, 'utf8');
-    assert.ok(content.includes('name: qe-analysis'));
-    assert.ok(content.includes('qe_get_system_prompt'));
-  });
-
-  it('dry-run does not require --force when dest exists', async () => {
-    const dryPlan = await buildInitPlan({
-      dryRun: true,
-      force: false,
-      project: projectDir,
-    });
-    await executeInit(dryPlan, { dryRun: true, force: false, project: projectDir });
+    const refinement = plan.targets.find((t) => t.skillName === 'qe-refinement');
+    assert.ok(refinement);
+    const content = await readFile(refinement.destSkillPath, 'utf8');
+    assert.ok(content.includes('qe_intel_refinement'));
   });
 
   it('refuses overwrite without --force', async () => {

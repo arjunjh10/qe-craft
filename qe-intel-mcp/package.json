@@ -1,7 +1,7 @@
 {
   "name": "qe-intel-mcp",
-  "version": "1.0.0",
-  "description": "QE Intel MCP — validate JSON, evidence guards, tabbed HTML, local save — no API key",
+  "version": "1.1.0",
+  "description": "QE Intel MCP — guided qe_intel_* runs for copilot coaching; optional validate/save — no API key",
   "type": "module",
   "main": "dist/server.js",
   "bin": {
@@ -20,7 +20,7 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "check": "npm run typecheck && npm run lint",
-    "test": "npm run build && node --test dist/core/prompts/build-system-prompt.test.js dist/core/parse-report.test.js dist/core/validate-report.test.js dist/json-report-pipeline.test.js dist/report-renderer.test.js dist/file-writer.test.js dist/deterministic-tools.test.js dist/init.test.js",
+    "test": "npm run build && node --test dist/core/prompts/build-system-prompt.test.js dist/core/parse-report.test.js dist/core/validate-report.test.js dist/json-report-pipeline.test.js dist/report-renderer.test.js dist/file-writer.test.js dist/deterministic-tools.test.js dist/intel/intel-tools.test.js dist/init.test.js",
     "sync-skill": "cp \"$HOME/.cursor/skills/qe-analysis/SKILL.md\" skills/qe-analysis/SKILL.md",
     "prepack": "npm run build",
     "prepublishOnly": "npm run check && npm run test",

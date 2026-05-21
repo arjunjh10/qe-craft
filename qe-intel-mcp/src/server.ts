@@ -16,13 +16,82 @@ import {
   saveReportSchema,
   validateReportSchema,
 } from './core/index.js';
+import {
+  handleIntelBug,
+  handleIntelRefinement,
+  handleIntelRegression,
+  handleIntelRepoUat,
+  handleIntelReview,
+  handleIntelUat,
+} from './intel/handlers.js';
+import { intelToolSchemas } from './intel/schemas.js';
 
-function registerDeterministicTools(server: McpServer): void {
+function registerIntelTools(server: McpServer): void {
+  const intelDescription =
+    'Start a guided QE Intel run (coach-first). Returns phased playbook for Cursor to execute. No API key.';
+
+  server.registerTool(
+    'qe_intel_refinement',
+    {
+      description: `${intelDescription} Mode: REFINEMENT (story grooming, AC gaps).`,
+      inputSchema: intelToolSchemas.refinement,
+    },
+    async (args) => handleIntelRefinement(args),
+  );
+
+  server.registerTool(
+    'qe_intel_uat',
+    {
+      description: `${intelDescription} Mode: UAT (release GO/NO-GO).`,
+      inputSchema: intelToolSchemas.uat,
+    },
+    async (args) => handleIntelUat(args),
+  );
+
+  server.registerTool(
+    'qe_intel_repo_uat',
+    {
+      description: `${intelDescription} Mode: REPO_UAT (no ticket, repo charter).`,
+      inputSchema: intelToolSchemas.repoUat,
+    },
+    async (args) => handleIntelRepoUat(args),
+  );
+
+  server.registerTool(
+    'qe_intel_bug',
+    {
+      description: `${intelDescription} Mode: BUG (incident, root cause).`,
+      inputSchema: intelToolSchemas.bug,
+    },
+    async (args) => handleIntelBug(args),
+  );
+
+  server.registerTool(
+    'qe_intel_regression',
+    {
+      description: `${intelDescription} Mode: REGRESSION (change impact, retest).`,
+      inputSchema: intelToolSchemas.regression,
+    },
+    async (args) => handleIntelRegression(args),
+  );
+
+  server.registerTool(
+    'qe_intel_review',
+    {
+      description:
+        'Plain-language critique of a draft QE scenario list or report section. Use before saving artifacts. No API key.',
+      inputSchema: intelToolSchemas.review,
+    },
+    async (args) => handleIntelReview(args),
+  );
+}
+
+function registerArtifactTools(server: McpServer): void {
   server.registerTool(
     'qe_get_system_prompt',
     {
       description:
-        'Return the assembled QE system prompt for the given mode and output format. Use with the Cursor agent for analysis (no API key).',
+        'Return assembled senior-QE prompt (full tier / debug). Prefer qe_intel_* for guided runs.',
       inputSchema: getSystemPromptSchema,
     },
     async (args: z.infer<typeof getSystemPromptSchema>) =>
@@ -32,8 +101,7 @@ function registerDeterministicTools(server: McpServer): void {
   server.registerTool(
     'qe_get_json_schema',
     {
-      description:
-        'Return the JSON report schema description for structured QE output. No API key required.',
+      description: 'JSON report schema (Phase E / full tier). No API key.',
     },
     async () => handleGetJsonSchema(),
   );
@@ -41,8 +109,7 @@ function registerDeterministicTools(server: McpServer): void {
   server.registerTool(
     'qe_validate_report',
     {
-      description:
-        'Parse, Zod-validate, apply evidence guards, and build the report envelope from agent-produced JSON. No API key required.',
+      description: 'Validate agent JSON + evidence guards (Phase E). No API key.',
       inputSchema: validateReportSchema,
     },
     async (args: z.input<typeof validateReportSchema>) =>
@@ -52,8 +119,7 @@ function registerDeterministicTools(server: McpServer): void {
   server.registerTool(
     'qe_save_report',
     {
-      description:
-        'Write validated JSON envelope and tabbed HTML under docs/qe-analysis/. No API key required.',
+      description: 'Save validated JSON + HTML under docs/qe-analysis/ (Phase E).',
       inputSchema: saveReportSchema,
     },
     async (args: z.infer<typeof saveReportSchema>) => handleSaveReport(args),
@@ -62,8 +128,7 @@ function registerDeterministicTools(server: McpServer): void {
   server.registerTool(
     'qe_save_markdown',
     {
-      description:
-        'Write markdown QE analysis under docs/qe-analysis/. No API key required.',
+      description: 'Save markdown report under docs/qe-analysis/ (Phase E).',
       inputSchema: saveMarkdownSchema,
     },
     async (args: z.infer<typeof saveMarkdownSchema>) =>
@@ -77,10 +142,11 @@ async function main(): Promise<void> {
     version: MCP_SERVER_VERSION,
   });
 
-  registerDeterministicTools(server);
+  registerIntelTools(server);
+  registerArtifactTools(server);
 
   console.error(
-    'qe-intel MCP: deterministic tools ready (qe_get_system_prompt, qe_validate_report, qe_save_report, qe_save_markdown, qe_get_json_schema).',
+    'qe-intel MCP: primary qe_intel_* (guided runs); artifact qe_validate_report, qe_save_*; debug qe_get_system_prompt.',
   );
 
   await server.connect(new StdioServerTransport());

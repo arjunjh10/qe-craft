@@ -23,8 +23,9 @@ flowchart TB
 
 | Step | Who runs it | API key in MCP? | Network from MCP server? |
 |------|-------------|-----------------|---------------------------|
-| Repo exploration + QE narrative | IDE agent + `qe-analysis` skill | No | No (IDE vendor handles chat) |
-| Validate, envelope, HTML, save | MCP deterministic tools | No | **No** |
+| Repo exploration + QE coaching | IDE agent + `qe_intel_*` skills | No | No (IDE vendor handles chat) |
+| Guided playbook + repo scan hints | MCP `qe_intel_*` (local rg/walk under `REPO_ROOT`) | No | **No** |
+| Validate, envelope, HTML, save (optional) | MCP Phase E tools | No | **No** |
 
 ---
 
@@ -34,15 +35,17 @@ The stdio MCP server (`qe-intel-mcp`) registers **deterministic** tools only:
 
 | Tool | Purpose | Data leaves MCP process? |
 |------|---------|----------------------------|
-| `qe_get_system_prompt` | Returns assembled system prompt text | No network; returned to IDE over stdio |
-| `qe_get_json_schema` | Returns JSON schema description | No network |
+| `qe_intel_*` | Phased QE playbook + optional repo path hints (local scan) | No network; stdio only |
+| `qe_intel_review` | Plain-language draft critique | No network |
+| `qe_get_system_prompt` | Full senior prompt (Phase E / debug) | No network |
+| `qe_get_json_schema` | JSON schema description | No network |
 | `qe_validate_report` | Parse, Zod validate, evidence guards, envelope | No network |
-| `qe_save_report` | Write `.json` + tabbed `.html` under `docs/qe-analysis/` | Writes local files only |
-| `qe_save_markdown` | Write markdown under `docs/qe-analysis/` | Writes local files only |
+| `qe_save_report` | Write `.json` + tabbed `.html` | Local disk only |
+| `qe_save_markdown` | Write markdown | Local disk only |
 
 The server **does not**:
 
-- Crawl or index your repository on its own
+- Full-repository indexing (light filename/rg hints under `REPO_ROOT` only)
 - Call Anthropic, OpenAI, or any other model API
 - Host a shared API key or relay traffic through maintainer infrastructure
 - Offer legacy one-shot `qe_uat` / `qe_refinement` tools that generate reports in-server
@@ -115,9 +118,9 @@ Playwright returns **page state**; QE MCP returns **validated artifacts**. In bo
 | Approach | MCP API key? | Artifacts |
 |----------|--------------|-----------|
 | **Skill only** | No | Markdown in chat / manual save |
-| **Skill + MCP (recommended)** | No | Validated JSON envelope, HTML, consistent filenames |
+| **Skill + MCP (recommended)** | No | Guided `qe_intel_*` runs; optional validated JSON/HTML |
 
-**Lead with the skill**; MCP adds contract enforcement and files without extra cloud egress from the server.
+**Lead with `qe_intel_*`** for coaching; Phase E save is optional.
 
 ---
 
