@@ -1,0 +1,135 @@
+{
+  "reportSchemaVersion": "1.0.0",
+  "promptVersion": "skill-v2-evidence-json",
+  "report": {
+    "mode": "UAT",
+    "title": "Checkout promo flow",
+    "generated": "2026-05-21",
+    "confidence": {
+      "level": "MEDIUM",
+      "reason": "Sample narrative; real UAT would cite ticket + branch"
+    },
+    "understanding": [
+      "Release slice: promo code on checkout review behind feature flag checkout.promo_v2.",
+      "Users validate codes, see adjusted totals, complete payment; finance receives promo_id on order.",
+      "Existing coverage: API contract tests for validation; one Playwright happy apply path."
+    ],
+    "gaps": [
+      {
+        "text": "Flag default in production vs staging for UAT window",
+        "assumed": true
+      },
+      {
+        "text": "Rollback plan if over-discount: flag off only vs purge in-flight carts",
+        "assumed": false
+      }
+    ],
+    "risks": [
+      {
+        "title": "Payment amount ≠ server total after promo apply",
+        "impact": "P0",
+        "likelihood": "Low",
+        "detection": "Easy",
+        "mitigation": "Block pay until server confirms total hash"
+      },
+      {
+        "title": "Partial flag rollout leaves CDN-cached checkout JS on old bundle",
+        "impact": "P1",
+        "likelihood": "Medium",
+        "detection": "Hard",
+        "mitigation": "Versioned asset URL; verify cache headers in UAT"
+      }
+    ],
+    "questions": [
+      "GO criteria: all P0 scenarios green in staging + one prod smoke at 1%?",
+      "Who signs finance reconciliation spot-check?"
+    ],
+    "scenarios": [
+      {
+        "id": "01",
+        "name": "Flag off",
+        "exploration": "Load checkout with flag disabled; confirm legacy path unchanged",
+        "evidence": {
+          "text": "config/feature-flags.ts:12 — checkout.promo_v2 feature flag",
+          "type": "code"
+        },
+        "why": "Safe rollback surface",
+        "layer": "UI",
+        "confidence": "HIGH"
+      },
+      {
+        "id": "02",
+        "name": "Flag on — happy path",
+        "exploration": "Valid code, test card pay; compare order promo_id in admin",
+        "evidence": {
+          "text": "tests/e2e/checkout-promo.spec.ts:5 — happy-path apply only",
+          "type": "code"
+        },
+        "why": "End-to-end release proof",
+        "layer": "UI",
+        "confidence": "HIGH"
+      },
+      {
+        "id": "03",
+        "name": "Flag on — invalid code",
+        "exploration": "Error UX and cart total unchanged",
+        "evidence": {
+          "text": "src/api/checkout/promo-handler.ts:42 — POST /checkout/promo validates eligibility",
+          "type": "code"
+        },
+        "why": "Regression on silent failure",
+        "layer": "UI",
+        "confidence": "MEDIUM"
+      },
+      {
+        "id": "04",
+        "name": "Staging → prod config drift",
+        "exploration": "Compare validation API base URL and promo rule version",
+        "evidence": {
+          "text": "Assumed: staging mirrors prod promo catalog within 15 minutes",
+          "type": "assumed"
+        },
+        "why": "Environment parity",
+        "layer": "Integration",
+        "confidence": "LOW"
+      }
+    ],
+    "automation": [
+      {
+        "layer": "UI",
+        "note": "Add Playwright invalid code + back-navigation before prod smoke"
+      },
+      {
+        "layer": "API",
+        "note": "Nightly contract suite against staging promo rules export"
+      }
+    ],
+    "nonfunctional": {
+      "performance": "Validation p95 within 200ms under UAT load script",
+      "security": "N/A",
+      "accessibility": "N/A",
+      "observability": "Dashboard for promo_validation_failed rate during UAT week"
+    },
+    "modeOutput": {
+      "content": "UAT execution plan: (1) flag-off sanity, (2) API contract suite in staging, (3) exploratory rows 2–4 timeboxed, (4) prod smoke at 1%. Release risks: CDN cache, concurrent limits, payment total mismatch."
+    },
+    "outOfScope": [
+      "Finance ledger reconciliation automation"
+    ],
+    "coverageGaps": [
+      {
+        "text": "Exploratory rows 3–4 not in CI today"
+      },
+      {
+        "text": "No automated flag-off regression in pipeline"
+      }
+    ],
+    "goNoGo": {
+      "decision": "CONDITIONAL GO",
+      "reason": "Proceed if P0 happy path passes in staging and observability dashboard is wired; defer prod % until finance spot-check signed"
+    },
+    "repoCandidates": [],
+    "repoLedger": []
+  },
+  "validationWarnings": []
+}

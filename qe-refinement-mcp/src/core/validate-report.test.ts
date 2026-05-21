@@ -10,8 +10,10 @@ describe('applyReportGuards', () => {
       feature: 'Promo codes at checkout',
     });
 
-    assert.equal(guarded.scenarios[0].evidence.type, 'assumed');
-    assert.equal(guarded.scenarios[0].confidence, 'MEDIUM');
+    const firstScenario = guarded.scenarios[0];
+    assert.ok(firstScenario);
+    assert.equal(firstScenario.evidence.type, 'assumed');
+    assert.equal(firstScenario.confidence, 'MEDIUM');
     assert.ok(
       validationWarnings.some((w) => w.includes('downgraded code → assumed')),
     );
@@ -24,8 +26,10 @@ describe('applyReportGuards', () => {
       feature: 'Promo codes',
     });
 
-    assert.equal(guarded.scenarios[0].evidence.type, 'code');
-    assert.equal(guarded.scenarios[0].confidence, 'HIGH');
+    const firstScenario = guarded.scenarios[0];
+    assert.ok(firstScenario);
+    assert.equal(firstScenario.evidence.type, 'code');
+    assert.equal(firstScenario.confidence, 'HIGH');
     assert.equal(validationWarnings.length, 0);
   });
 
@@ -59,7 +63,9 @@ describe('applyReportGuards', () => {
     });
 
     assert.equal(guarded.scenarios.length, 1);
-    assert.equal(guarded.scenarios[0].name, 'Refund after partial capture');
+    const remaining = guarded.scenarios[0];
+    assert.ok(remaining);
+    assert.equal(remaining.name, 'Refund after partial capture');
     assert.ok(guarded.droppedScenarios?.some((d) => d.reason === 'duplicate_coverage'));
     assert.ok(validationWarnings.some((w) => w.includes('overlaps existing_coverage')));
   });

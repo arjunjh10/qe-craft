@@ -24,8 +24,9 @@ export function extractJson(text: string): string {
   let trimmed = text.trim();
 
   const fenceMatch = trimmed.match(/^```(?:json)?\s*\n?([\s\S]*?)\n?```\s*$/i);
-  if (fenceMatch) {
-    trimmed = fenceMatch[1].trim();
+  const fencedBody = fenceMatch?.[1];
+  if (fencedBody !== undefined) {
+    trimmed = fencedBody.trim();
   } else {
     trimmed = trimmed.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/, '');
   }

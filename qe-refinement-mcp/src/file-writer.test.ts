@@ -61,6 +61,28 @@ describe('saveArtifacts and saveReportEnvelope', () => {
     assert.ok(htmlContent.includes('Checkout promo codes'));
   });
 
+  it('escapes script payloads in saved HTML', async () => {
+    const payload = '<script>alert("xss")</script>';
+    const envelope = buildEnvelope(
+      minimalValidReport({
+        title: payload,
+        modeOutput: { content: payload },
+      }),
+      [payload],
+    );
+    const saved = await saveReportEnvelope({
+      mode: 'REFINEMENT',
+      title: 'XSS save probe',
+      dateUtc: '2026-05-19',
+      envelope,
+    });
+
+    assert.ok('htmlPath' in saved);
+    const htmlContent = await readFile(join(tempDir, saved.htmlPath), 'utf8');
+    assert.ok(!htmlContent.includes('<script>alert'));
+    assert.ok(htmlContent.includes('&lt;script&gt;alert'));
+  });
+
   it('uses collision suffix on stem for all extensions', async () => {
     const { dir, baseStem } = buildArtifactPaths({
       mode: 'REFINEMENT',

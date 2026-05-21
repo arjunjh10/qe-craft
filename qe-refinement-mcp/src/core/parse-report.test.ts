@@ -52,7 +52,8 @@ describe('parseReportJson', () => {
     const result = parseReportJson('not json at all');
     assert.equal(result.ok, false);
     if (!result.ok) {
-      assert.ok(result.errors[0].startsWith('JSON parse error:'));
+      const firstError = result.errors[0];
+      assert.ok(firstError?.startsWith('JSON parse error:'));
     }
   });
 });

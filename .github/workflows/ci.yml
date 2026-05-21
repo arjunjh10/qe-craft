@@ -10,7 +10,7 @@ defaults:
     working-directory: qe-refinement-mcp
 
 jobs:
-  test:
+  qe-refinement-mcp:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,12 +19,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version-file: qe-refinement-mcp/.nvmrc
           cache: npm
           cache-dependency-path: qe-refinement-mcp/package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
         run: npm test

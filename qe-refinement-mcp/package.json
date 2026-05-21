@@ -8,7 +8,11 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "npm run build && node --test dist/core/prompts/build-system-prompt.test.js dist/core/parse-report.test.js dist/core/validate-report.test.js dist/json-report-pipeline.test.js dist/report-renderer.test.js dist/file-writer.test.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "check": "npm run typecheck && npm run lint",
+    "test": "npm run build && node --test dist/core/prompts/build-system-prompt.test.js dist/core/parse-report.test.js dist/core/validate-report.test.js dist/json-report-pipeline.test.js dist/report-renderer.test.js dist/file-writer.test.js dist/deterministic-tools.test.js",
     "start": "node dist/server.js",
     "dev": "node --env-file=.env ./node_modules/tsx/dist/cli.mjs src/server.ts"
   },
@@ -17,8 +21,11 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.28.0",
     "@types/node": "^22.15.0",
+    "eslint": "^9.28.0",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.33.0"
   }
 }

@@ -42,7 +42,7 @@ export function parseValidateAndEnvelope(
 }
 
 export function buildValidationContextFromInputs(inputs: {
-  feature: string;
+  feature?: string;
   api_context?: string;
   system_context?: string;
   user_context?: string;

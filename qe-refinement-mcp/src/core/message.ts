@@ -64,7 +64,7 @@ export function buildUserMessage(mode: QeMode, inputs: QeToolInputs): string {
 export function titleToSlug(title: string): string {
   const words = title
     .toLowerCase()
-    .replace(/[^\x00-\x7F]/g, '')
+    .replace(/[^\x20-\x7E]/g, '')
     .split(/[^a-z0-9]+/)
     .filter((w) => w.length > 0);
   if (words.length === 0) return SLUG_DEFAULT;

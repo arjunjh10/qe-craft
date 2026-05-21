@@ -1,0 +1,11 @@
+{
+  "eslint.useFlatConfig": true,
+  "eslint.workingDirectories": [
+    {
+      "directory": "qe-refinement-mcp",
+      "changeProcessCWD": true
+    }
+  ],
+  "typescript.tsdk": "qe-refinement-mcp/node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QE Analysis — Checkout promo flow</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --border: #2d3a4d;
+      --text: #e7ecf3;
+      --muted: #8b9cb3;
+      --accent: #3d8bfd;
+      --warn-bg: #3d2a14;
+      --warn-border: #c9782a;
+      --high: #2d6a4f;
+      --medium: #5c4d1f;
+      --low: #6b2d3a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 1.5rem;
+      line-height: 1.5;
+    }
+    h1 { font-size: 1.5rem; margin: 0 0 1rem; }
+    h3 { font-size: 1rem; margin: 1.25rem 0 0.5rem; color: var(--muted); }
+    .muted { color: var(--muted); }
+    .warnings {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    .warnings ul { margin: 0.5rem 0 0; padding-left: 1.25rem; }
+    [role="tablist"] {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+    [role="tab"] {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0.6rem 1rem;
+      font: inherit;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    [role="tab"]:hover { color: var(--text); }
+    [role="tab"][aria-selected="true"] {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    [role="tabpanel"] { min-height: 12rem; }
+    [role="tabpanel"][hidden] { display: none; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    table.wide { display: block; overflow-x: auto; }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.65rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--surface); color: var(--muted); font-weight: 600; }
+    .meta {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.25rem 1rem;
+      margin: 0 0 1rem;
+    }
+    .meta dt { color: var(--muted); }
+    .meta dd { margin: 0; }
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 0.35rem;
+    }
+    .badge-high { background: var(--high); }
+    .badge-medium { background: var(--medium); }
+    .badge-low { background: var(--low); }
+    .tag {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-left: 0.25rem;
+    }
+    .pre {
+      white-space: pre-wrap;
+      background: var(--surface);
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+    ul { margin: 0; padding-left: 1.25rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Checkout promo flow</h1>
+    <p class="muted">QE Intelligence Suite · UAT</p>
+  </header>
+  
+  <div role="tablist" aria-label="Report sections">
+    <button type="button" role="tab" id="tab-overview" aria-selected="true" aria-controls="panel-overview" tabindex="0" data-tab="overview">Overview</button>
+    <button type="button" role="tab" id="tab-gaps" aria-selected="false" aria-controls="panel-gaps" tabindex="-1" data-tab="gaps">Gaps &amp; questions</button>
+    <button type="button" role="tab" id="tab-risks" aria-selected="false" aria-controls="panel-risks" tabindex="-1" data-tab="risks">Risks</button>
+    <button type="button" role="tab" id="tab-scenarios" aria-selected="false" aria-controls="panel-scenarios" tabindex="-1" data-tab="scenarios">Scenarios</button>
+    <button type="button" role="tab" id="tab-automation" aria-selected="false" aria-controls="panel-automation" tabindex="-1" data-tab="automation">Automation &amp; NFR</button>
+    <button type="button" role="tab" id="tab-mode" aria-selected="false" aria-controls="panel-mode" tabindex="-1" data-tab="mode">Mode output</button>
+    <button type="button" role="tab" id="tab-scope" aria-selected="false" aria-controls="panel-scope" tabindex="-1" data-tab="scope">Scope</button>
+  </div>
+  <section role="tabpanel" id="panel-overview" aria-labelledby="tab-overview">
+    <dl class="meta">
+      <dt>Mode</dt><dd>UAT</dd>
+      <dt>Generated</dt><dd>2026-05-21</dd>
+      <dt>Schema</dt><dd>1.0.0</dd>
+      <dt>Prompt</dt><dd>skill-v2-evidence-json</dd>
+    </dl>
+    <p class="confidence">
+      <span class="badge badge-medium">MEDIUM</span>
+      Sample narrative; real UAT would cite ticket + branch
+    </p>
+    <h3>Understanding</h3>
+    <ul><li>Release slice: promo code on checkout review behind feature flag checkout.promo_v2.</li><li>Users validate codes, see adjusted totals, complete payment; finance receives promo_id on order.</li><li>Existing coverage: API contract tests for validation; one Playwright happy apply path.</li></ul>
+    <h3>GO / NO-GO</h3>
+         <p><strong>CONDITIONAL GO</strong> — Proceed if P0 happy path passes in staging and observability dashboard is wired; defer prod % until finance spot-check signed</p></section>
+  <section role="tabpanel" id="panel-gaps" aria-labelledby="tab-gaps" hidden><h3>Gaps</h3><table><thead><tr><th>Gap</th><th>Assumed</th></tr></thead><tbody><tr><td>Flag default in production vs staging for UAT window</td><td>Yes</td></tr><tr><td>Rollback plan if over-discount: flag off only vs purge in-flight carts</td><td>No</td></tr></tbody></table><h3>Questions</h3><ul><li>GO criteria: all P0 scenarios green in staging + one prod smoke at 1%?</li><li>Who signs finance reconciliation spot-check?</li></ul></section>
+  <section role="tabpanel" id="panel-risks" aria-labelledby="tab-risks" hidden><table class="wide"><thead><tr>
+    <th>Risk</th><th>Impact</th><th>Likelihood</th><th>Detection</th><th>Mitigation</th>
+  </tr></thead><tbody><tr>
+          <td>Payment amount ≠ server total after promo apply</td>
+          <td>P0</td>
+          <td>Low</td>
+          <td>Easy</td>
+          <td>Block pay until server confirms total hash</td>
+        </tr><tr>
+          <td>Partial flag rollout leaves CDN-cached checkout JS on old bundle</td>
+          <td>P1</td>
+          <td>Medium</td>
+          <td>Hard</td>
+          <td>Versioned asset URL; verify cache headers in UAT</td>
+        </tr></tbody></table></section>
+  <section role="tabpanel" id="panel-scenarios" aria-labelledby="tab-scenarios" hidden><table class="wide"><thead><tr>
+    <th>#</th><th>Scenario</th><th>Exploration</th><th>Evidence</th><th>Confidence</th><th>Why</th><th>Layer</th>
+  </tr></thead><tbody><tr>
+          <td>01</td>
+          <td>Flag off</td>
+          <td>Load checkout with flag disabled; confirm legacy path unchanged</td>
+          <td><span class="evidence-code">config/feature-flags.ts:12 — checkout.promo_v2 feature flag</span> <span class="tag">code</span></td>
+          <td><span class="badge badge-high">HIGH</span></td>
+          <td>Safe rollback surface</td>
+          <td>UI</td>
+        </tr><tr>
+          <td>02</td>
+          <td>Flag on — happy path</td>
+          <td>Valid code, test card pay; compare order promo_id in admin</td>
+          <td><span class="evidence-code">tests/e2e/checkout-promo.spec.ts:5 — happy-path apply only</span> <span class="tag">code</span></td>
+          <td><span class="badge badge-high">HIGH</span></td>
+          <td>End-to-end release proof</td>
+          <td>UI</td>
+        </tr><tr>
+          <td>03</td>
+          <td>Flag on — invalid code</td>
+          <td>Error UX and cart total unchanged</td>
+          <td><span class="evidence-code">src/api/checkout/promo-handler.ts:42 — POST /checkout/promo validates eligibility</span> <span class="tag">code</span></td>
+          <td><span class="badge badge-medium">MEDIUM</span></td>
+          <td>Regression on silent failure</td>
+          <td>UI</td>
+        </tr><tr>
+          <td>04</td>
+          <td>Staging → prod config drift</td>
+          <td>Compare validation API base URL and promo rule version</td>
+          <td><span class="evidence-assumed">Assumed: staging mirrors prod promo catalog within 15 minutes</span> <span class="tag">assumed</span></td>
+          <td><span class="badge badge-low">LOW</span></td>
+          <td>Environment parity</td>
+          <td>Integration</td>
+        </tr></tbody></table></section>
+  <section role="tabpanel" id="panel-automation" aria-labelledby="tab-automation" hidden><h3>Automation</h3><table><thead><tr><th>Layer</th><th>Note</th></tr></thead><tbody><tr><td>UI</td><td>Add Playwright invalid code + back-navigation before prod smoke</td></tr><tr><td>API</td><td>Nightly contract suite against staging promo rules export</td></tr></tbody></table>
+        <h3>Non-functional</h3><table><tbody><tr><th>performance</th><td>Validation p95 within 200ms under UAT load script</td></tr><tr><th>security</th><td>N/A</td></tr><tr><th>accessibility</th><td>N/A</td></tr><tr><th>observability</th><td>Dashboard for promo_validation_failed rate during UAT week</td></tr></tbody></table></section>
+  <section role="tabpanel" id="panel-mode" aria-labelledby="tab-mode" hidden><pre class="pre">UAT execution plan: (1) flag-off sanity, (2) API contract suite in staging, (3) exploratory rows 2–4 timeboxed, (4) prod smoke at 1%. Release risks: CDN cache, concurrent limits, payment total mismatch.</pre></section>
+  <section role="tabpanel" id="panel-scope" aria-labelledby="tab-scope" hidden><h3>Out of scope</h3><ul><li>Finance ledger reconciliation automation</li></ul>
+        <h3>Coverage gaps</h3><table><thead><tr><th>Gap</th><th>Reason</th></tr></thead><tbody><tr><td>Exploratory rows 3–4 not in CI today</td><td>—</td></tr><tr><td>No automated flag-off regression in pipeline</td><td>—</td></tr></tbody></table>
+        </section>
+  <script>
+    (function () {
+      var tablist = document.querySelector('[role="tablist"]');
+      if (!tablist) return;
+      var tabs = tablist.querySelectorAll('[role="tab"]');
+      function activateTab(tab) {
+        tabs.forEach(function (t) {
+          var selected = t === tab;
+          t.setAttribute('aria-selected', selected ? 'true' : 'false');
+          t.tabIndex = selected ? 0 : -1;
+          var panel = document.getElementById(t.getAttribute('aria-controls'));
+          if (panel) panel.hidden = !selected;
+        });
+        tab.focus();
+      }
+      tablist.addEventListener('click', function (e) {
+        var tab = e.target.closest('[role="tab"]');
+        if (tab) activateTab(tab);
+      });
+      tablist.addEventListener('keydown', function (e) {
+        var list = Array.prototype.slice.call(tabs);
+        var i = list.indexOf(document.activeElement);
+        if (i < 0) return;
+        var next = i;
+        if (e.key === 'ArrowRight') next = (i + 1) % list.length;
+        else if (e.key === 'ArrowLeft') next = (i - 1 + list.length) % list.length;
+        else if (e.key === 'Home') next = 0;
+        else if (e.key === 'End') next = list.length - 1;
+        else return;
+        e.preventDefault();
+        activateTab(list[next]);
+      });
+    })();
+  </script>
+</body>
+</html>
