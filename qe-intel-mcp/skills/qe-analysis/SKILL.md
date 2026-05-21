@@ -27,7 +27,6 @@ description: Router for QE Intelligence — picks the right qe_intel_* guided ru
 ## Companion tools
 
 - **QE Intel MCP** — guided runs + optional artifacts (no API key).
-- **Playwright / Agentic QE** — test execution, not this package.
 
 ## Legacy
 

@@ -4,12 +4,9 @@
 
 ## Trust-first default
 
-| | Playwright MCP | **QE MCP (default)** |
-|--|----------------|----------------------|
-| LLM inside the server | No | **No** |
-| API key in MCP config | No | **No** |
-| What MCP does | Browser / DOM tools | **`qe_intel_*` guided runs** + optional validate/save |
-| Who does the QE thinking | IDE agent | **IDE agent** (skills + phased playbook from MCP) |
+- **No LLM in the MCP server** — `qe_intel_*` guided runs and optional validate/save only.
+- **No API key in MCP config** — QE reasoning stays in your IDE agent (skills + phased playbook).
+- **Coach-first** — better QE in chat by default; files only when you ask.
 
 **Install story:** `npx qe-intel-mcp init` (six skills) + MCP `qe-intel`. Agent calls **`qe_intel_refinement`** (etc.) first — coach output in chat by default; files only when asked.
 

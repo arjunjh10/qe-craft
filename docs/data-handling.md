@@ -98,21 +98,6 @@ Evidence rules embedded in prompts match these practices; see `qe-intel-mcp/src/
 
 ---
 
-## Comparison: Playwright MCP vs QE MCP
-
-| | [Playwright MCP](https://github.com/microsoft/playwright-mcp) | QE MCP |
-|--|-------------------------------|--------|
-| LLM inside server | No | No |
-| User API key in server | No | No |
-| Primary role | Browser automation tools | Validate, envelope, HTML, save |
-| Primary output | DOM / accessibility snapshots | QE reports on disk |
-| Repo access | Via IDE agent | Via IDE agent only (not MCP crawl) |
-| “Another AI vendor” fear | Low — automation helper | Low — quality infrastructure |
-
-Playwright returns **page state**; QE MCP returns **validated artifacts**. In both cases the **IDE model** does the reasoning.
-
----
-
 ## Skill-only vs MCP-assisted
 
 | Approach | MCP API key? | Artifacts |
@@ -146,6 +131,6 @@ Questions or corrections: open an issue in the repository with the label `securi
 
 ## Related reading
 
-- [README](../README.md) — install, Playwright comparison, tool table
+- [README](../README.md) — install, trust model, tool table
 - [`qe-intel-mcp`](../qe-intel-mcp/) — server source
 - Sample outputs: [`docs/qe-analysis/samples/`](qe-analysis/samples/)
