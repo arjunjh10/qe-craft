@@ -1,10 +1,7 @@
-import { runQeAnalysis } from './anthropic-client.js';
 import {
   applyReportGuards,
   buildEnvelope,
-  buildJsonRetryUserMessage,
   parseReportJson,
-  type PromptContext,
   type QeReportEnvelope,
   type ReportValidationContext,
 } from './core/index.js';
@@ -42,33 +39,6 @@ export function parseValidateAndEnvelope(
     envelope: buildEnvelope(report, validationWarnings),
     rawText,
   };
-}
-
-export async function runJsonReportPipeline(params: {
-  userMessage: string;
-  promptContext: PromptContext;
-  validationContext: ReportValidationContext;
-}): Promise<JsonReportResult> {
-  let rawText = await runQeAnalysis(params.userMessage, params.promptContext);
-  let result = parseValidateAndEnvelope(rawText, params.validationContext);
-
-  if (result.ok) {
-    return result;
-  }
-
-  const retryMessage = buildJsonRetryUserMessage(
-    params.userMessage,
-    rawText,
-    result.errors,
-  );
-  rawText = await runQeAnalysis(retryMessage, params.promptContext);
-  result = parseValidateAndEnvelope(rawText, params.validationContext);
-
-  if (result.ok) {
-    return result;
-  }
-
-  return { ok: false, errors: result.errors, rawText };
 }
 
 export function buildValidationContextFromInputs(inputs: {
