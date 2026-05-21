@@ -1,20 +1,56 @@
 {
   "name": "qe-refinement-mcp",
   "version": "1.0.0",
+  "description": "MCP server for Senior QE analysis: validate JSON, evidence guards, tabbed HTML, local save — no API key",
   "type": "module",
   "main": "dist/server.js",
-  "engines": {
-    "node": ">=22.0.0"
+  "bin": {
+    "qe-refinement-mcp": "dist/cli.js"
   },
+  "files": [
+    "dist",
+    "skills",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "build": "tsc",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "check": "npm run typecheck && npm run lint",
-    "test": "npm run build && node --test dist/core/prompts/build-system-prompt.test.js dist/core/parse-report.test.js dist/core/validate-report.test.js dist/json-report-pipeline.test.js dist/report-renderer.test.js dist/file-writer.test.js dist/deterministic-tools.test.js",
+    "test": "npm run build && node --test dist/core/prompts/build-system-prompt.test.js dist/core/parse-report.test.js dist/core/validate-report.test.js dist/json-report-pipeline.test.js dist/report-renderer.test.js dist/file-writer.test.js dist/deterministic-tools.test.js dist/init.test.js",
+    "sync-skill": "cp \"$HOME/.cursor/skills/qe-analysis/SKILL.md\" skills/qe-analysis/SKILL.md",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run check && npm run test",
+    "pack:check": "npm run build && npm pack --dry-run",
     "start": "node dist/server.js",
     "dev": "node --env-file=.env ./node_modules/tsx/dist/cli.mjs src/server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arjunjh10/qe-intelligence-suite.git",
+    "directory": "qe-refinement-mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/arjunjh10/qe-intelligence-suite/issues"
+  },
+  "homepage": "https://github.com/arjunjh10/qe-intelligence-suite#readme",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "qe",
+    "quality-engineering",
+    "testing",
+    "cursor",
+    "uat",
+    "test-plan"
+  ],
+  "author": "Arjun Jhawar",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",

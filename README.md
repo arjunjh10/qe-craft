@@ -57,6 +57,40 @@ sequenceDiagram
 
 **Requirements:** Node 22+ (for `node --env-file` and built-in test runner).
 
+### Install via npx (published package)
+
+After [`qe-refinement-mcp` is on npm](https://www.npmjs.com/package/qe-refinement-mcp), add to `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "qe-refinement": {
+      "command": "npx",
+      "args": ["-y", "qe-refinement-mcp@latest"],
+      "env": {
+        "REPO_ROOT": "/ABSOLUTE/PATH/to/your/target-repo"
+      }
+    }
+  }
+}
+```
+
+Restart Cursor. **No API keys.**
+
+### Install the skill (`init`)
+
+```bash
+npx qe-refinement-mcp init
+# team repo: npx qe-refinement-mcp init --project /absolute/path/to/repo
+# preview:  npx qe-refinement-mcp init --dry-run
+```
+
+Copies the bundled **`qe-analysis`** skill into `~/.cursor/skills/qe-analysis/` (or the project’s `.cursor/skills/`). Restart Cursor again.
+
+**Example prompts** (skill + MCP): [`qe-refinement-mcp/README.md`](qe-refinement-mcp/README.md#invoke-qe-via-skill--mcp-examples).
+
+### Install from source (this repo)
+
 ```bash
 cd qe-refinement-mcp
 npm install
@@ -66,7 +100,7 @@ test -f dist/server.js && echo "Build OK"
 
 Optional: `REPO_ROOT=/absolute/path/to/target-repo` so analyses save under that repo’s `docs/qe-analysis/` (defaults to process cwd).
 
-### Cursor MCP (`~/.cursor/mcp.json`)
+### Cursor MCP — local clone (`~/.cursor/mcp.json`)
 
 Use **absolute paths** on your machine. **No API keys.**
 
@@ -76,7 +110,7 @@ Use **absolute paths** on your machine. **No API keys.**
     "qe-refinement": {
       "command": "node",
       "args": [
-        "/ABSOLUTE/PATH/qe-intelligence-suite/qe-refinement-mcp/dist/server.js"
+        "/ABSOLUTE/PATH/qe-intelligence-suite/qe-refinement-mcp/dist/cli.js"
       ],
       "env": {
         "REPO_ROOT": "/ABSOLUTE/PATH/to/your/target-repo"
@@ -87,6 +121,8 @@ Use **absolute paths** on your machine. **No API keys.**
 ```
 
 Restart Cursor after saving.
+
+Publish checklist for maintainers: [`qe-refinement-mcp/README.md`](qe-refinement-mcp/README.md#publishing-maintainers).
 
 **Local dev** (stdio):
 
@@ -112,7 +148,7 @@ Inference runs in **Cursor**; MCP only validates, guards, renders, and saves. Th
 
 **Obsolete:** one-shot tools such as `qe_repo_uat` with in-server generation — removed. Do not add `ANTHROPIC_MODEL`, `MAX_TOKENS`, or API keys to MCP config; there is no Anthropic (or other) LLM call inside this server.
 
-### Output artifact matrix
+### Output artifact table
 
 | `output_format` | Files written (`save_file=true`) | MCP chat body |
 |-----------------|----------------------------------|---------------|
@@ -167,13 +203,7 @@ There are **no** `ANTHROPIC_MODEL`, `ANTHROPIC_MAX_TOKENS`, or API-key variables
 
 ## Prompt hygiene
 
-Embedded prompts are derived from the Cursor `qe-analysis` skill with org-specific references removed. Before release, verify no **Matrix**, **dxp**, or **Squiz** strings:
-
-```bash
-grep -riE 'matrix|dxp|squiz' qe-refinement-mcp/src/core/prompts && echo 'FAIL' || echo 'Prompt OK'
-```
-
-When the skill changes, update `qe-refinement-mcp/src/core/prompts/` and bump `PROMPT_VERSION` in `src/core/constants.ts`.
+Prompts and the bundled skill should stay **vendor-neutral** (no employer-specific product names). When the skill changes, update `skills/qe-analysis/SKILL.md`, mirror rules in `qe-refinement-mcp/src/core/prompts/`, run `npm run sync-skill` if edited in `~/.cursor/skills/`, and bump `PROMPT_VERSION` in `src/core/constants.ts`.
 
 ## Relation to portfolio demos
 
