@@ -1,7 +1,7 @@
 export const PROMPT_VERSION = 'intel-v1-coach';
 
-export const MCP_SERVER_NAME = 'qe-intel';
-export const MCP_SERVER_VERSION = '1.1.0';
+export const MCP_SERVER_NAME = 'qe-craft';
+export const MCP_SERVER_VERSION = '1.0.0';
 
 export const EVIDENCE_CONTEXT_MAX_CHARS = 10_000;
 

@@ -146,13 +146,13 @@ async function main(): Promise<void> {
   registerArtifactTools(server);
 
   console.error(
-    'qe-intel MCP: primary qe_intel_* (guided runs); artifact qe_validate_report, qe_save_*; debug qe_get_system_prompt.',
+    'qe-craft MCP: primary qe_intel_* (guided runs); artifact qe_validate_report, qe_save_*; debug qe_get_system_prompt.',
   );
 
   await server.connect(new StdioServerTransport());
 }
 
 main().catch((err) => {
-  console.error('qe-intel MCP server failed:', err);
+  console.error('qe-craft MCP server failed:', err);
   process.exit(1);
 });

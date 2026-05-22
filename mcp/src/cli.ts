@@ -20,13 +20,13 @@ if (subcommand === undefined) {
 }
 
 function printCliHelp(): void {
-  console.log(`qe-intel-mcp — Senior QE MCP server (stdio) + setup CLI
+  console.log(`@qe-craft/mcp — Senior QE MCP server (stdio) + setup CLI
 
 Usage:
-  qe-intel-mcp              Start MCP server (default for Cursor)
-  qe-intel-mcp init [opts]  Install qe-analysis Cursor skill from this package
-  qe-intel-mcp help         Show this help
+  qe-craft-mcp              Start MCP server (default for Cursor)
+  qe-craft-mcp init [opts]  Install QE Craft Cursor skills from this package
+  qe-craft-mcp help         Show this help
 
-Run "qe-intel-mcp init --help" for init options.
+Run "qe-craft-mcp init --help" for init options.
 `);
 }

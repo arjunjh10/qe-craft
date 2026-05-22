@@ -1,10 +1,10 @@
 {
-  "extends": "./qe-intel-mcp/tsconfig.json",
+  "extends": "./mcp/tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
-    "rootDir": "./qe-intel-mcp/src",
-    "outDir": "./qe-intel-mcp/dist"
+    "rootDir": "./mcp/src",
+    "outDir": "./mcp/dist"
   },
-  "include": ["qe-intel-mcp/src/**/*.ts"],
-  "exclude": ["qe-intel-mcp/dist", "qe-intel-mcp/node_modules"]
+  "include": ["mcp/src/**/*.ts"],
+  "exclude": ["mcp/dist", "mcp/node_modules"]
 }

@@ -1,6 +1,6 @@
 # Data handling and privacy
 
-This page explains **what leaves your machine** when you use QE Intelligence Suite, so security and compliance reviewers can approve or reject the workflow in one read.
+This page explains **what leaves your machine** when you use QE Craft, so security and compliance reviewers can approve or reject the workflow in one read.
 
 **Short answer:** The MCP server does **not** call any external LLM API. Analysis runs in your IDE (Cursor skill); MCP validates JSON, renders HTML, and writes files **locally**. You do **not** need an Anthropic or other model API key for MCP.
 
@@ -14,7 +14,7 @@ This page explains **what leaves your machine** when you use QE Intelligence Sui
 flowchart TB
   Dev[Developer]
   CursorLLM[IDE LLM e.g. Cursor]
-  MCP[qe-intel-mcp]
+  MCP[@qe-craft/mcp]
   Disk[docs/qe-analysis/ on disk]
   Dev -->|chat, repo read| CursorLLM
   Dev -->|MCP tool calls| MCP
@@ -31,7 +31,7 @@ flowchart TB
 
 ## What the MCP server does
 
-The stdio MCP server (`qe-intel-mcp`) registers **deterministic** tools only:
+The stdio MCP server (`@qe-craft/mcp`) registers **deterministic** tools only:
 
 | Tool | Purpose | Data leaves MCP process? |
 |------|---------|----------------------------|
@@ -78,7 +78,7 @@ When you follow the **`qe-analysis` skill** (recommended), the Cursor (or other)
 
 That content is handled under **your IDE provider’s** terms, retention, and enterprise agreement — the same as any coding assistant. This repo does not control that path.
 
-**Enterprise nuance:** Many teams already approve Cursor for source-aware assistance. QE Intelligence Suite adds **local** validation and artifacts without a **second** cloud LLM call from the MCP server.
+**Enterprise nuance:** Many teams already approve Cursor for source-aware assistance. QE Craft adds **local** validation and artifacts without a **second** cloud LLM call from the MCP server.
 
 We do **not** claim “runs fully locally” or “your code never leaves your machine” when IDE analysis is in use — only that **MCP does not add another cloud inference hop**.
 
@@ -94,7 +94,7 @@ When using the skill and MCP validate/save:
 4. **Assumed vs code** — Label hypotheses `Assumed:` so guards and reviewers can spot uncited claims.
 5. **Save locally on purpose** — `docs/qe-analysis/` files may be committed; review before `git push`.
 
-Evidence rules embedded in prompts match these practices; see `qe-intel-mcp/src/core/prompts/evidence-rules.ts`.
+Evidence rules embedded in prompts match these practices; see `mcp/src/core/prompts/evidence-rules.ts`.
 
 ---
 
@@ -115,7 +115,7 @@ Evidence rules embedded in prompts match these practices; see `qe-intel-mcp/src/
 |----------|---------|
 | `REPO_ROOT` | Optional — target repo for `docs/qe-analysis/` (defaults to cwd) |
 
-See [`qe-intel-mcp/.env.example`](../qe-intel-mcp/.env.example).
+See [`mcp/.env.example`](../mcp/.env.example).
 
 ---
 
@@ -131,6 +131,7 @@ Questions or corrections: open an issue in the repository with the label `securi
 
 ## Related reading
 
-- [README](../README.md) — install, trust model, tool table
-- [`qe-intel-mcp`](../qe-intel-mcp/) — server source
+- [README](../README.md) — install and trust model
+- [`mcp/README.md`](../mcp/README.md) — MCP tools, architecture, maintainer publish
+- [`mcp`](../mcp/) — server source
 - Sample outputs: [`docs/qe-analysis/samples/`](qe-analysis/samples/)

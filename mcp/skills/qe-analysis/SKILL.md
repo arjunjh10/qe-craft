@@ -1,6 +1,6 @@
 ---
 name: qe-analysis
-description: Router for QE Intelligence — picks the right qe_intel_* guided run. Use when unsure which QE mode fits, or user says "QE analysis" without naming refinement/UAT/bug/regression.
+description: Router for QE Craft — picks the right qe_intel_* guided run. Use when unsure which QE mode fits, or user says "QE analysis" without naming refinement/UAT/bug/regression.
 ---
 
 # QE Analysis (router)

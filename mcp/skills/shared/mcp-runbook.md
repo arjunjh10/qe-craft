@@ -123,7 +123,3 @@ Always include:
 | "MCP scanned the repository" | **No** — MCP only receives what you pass in args |
 | "Evidence was verified in workspace" | Yes, when you actually read/grepped those paths |
 | Paths in scenarios without workspace access | Mark `blocked` in section 11 / `assumed` evidence type |
-
-## Opt-in strict pipeline (not default)
-
-If the user enabled **`QE_STRICT_PIPELINE=true`** and **`ANTHROPIC_API_KEY`**, legacy one-shot tools (`qe_refinement`, `qe_uat`, etc.) may run inference inside MCP. **Default installs should use this runbook instead** — one IDE thread, no second cloud vendor. Do not suggest BYOK unless the user explicitly wants a fixed remote model and accepts data egress to Anthropic.

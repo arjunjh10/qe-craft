@@ -2,10 +2,10 @@
   "eslint.useFlatConfig": true,
   "eslint.workingDirectories": [
     {
-      "directory": "qe-intel-mcp",
+      "directory": "mcp",
       "changeProcessCWD": true
     }
   ],
-  "typescript.tsdk": "qe-intel-mcp/node_modules/typescript/lib",
+  "typescript.tsdk": "mcp/node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true
 }

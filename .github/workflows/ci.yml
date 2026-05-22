@@ -7,10 +7,10 @@ on:
 
 defaults:
   run:
-    working-directory: qe-intel-mcp
+    working-directory: mcp
 
 jobs:
-  qe-intel-mcp:
+  mcp:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,9 +19,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: qe-intel-mcp/.nvmrc
+          node-version-file: mcp/.nvmrc
           cache: npm
-          cache-dependency-path: qe-intel-mcp/package-lock.json
+          cache-dependency-path: mcp/package-lock.json
 
       - name: Install dependencies
         run: npm ci

@@ -1,193 +1,137 @@
-# QE Intelligence Suite
+# QE Craft
 
-**Guided QE in Cursor** for teams with mixed QA depth: copilot coaching (phased playbooks) plus optional formal reports. Modes: refinement, UAT, repo charter, incident, regression.
+Your QE expertise, inside every developer's IDE.  
+No API keys. No new accounts. No extra tools to learn.
 
-## Trust-first default
-
-- **No LLM in the MCP server** — `qe_intel_*` guided runs and optional validate/save only.
-- **No API key in MCP config** — QE reasoning stays in your IDE agent (skills + phased playbook).
-- **Coach-first** — better QE in chat by default; files only when you ask.
-
-**Install story:** `npx qe-intel-mcp init` (seven skills) + MCP `qe-intel`. Agent calls **`qe_intel_refinement`** (etc.) first — coach output in chat by default; files only when asked.
-
-**Data handling:** See **[`docs/data-handling.md`](docs/data-handling.md)** — what stays local vs what goes to your IDE provider.
-
-| Layer | What it is |
-|-------|------------|
-| **This repo** | `qe-intel-mcp` — `qe_intel_*` guided runs (`PROMPT_VERSION`: `intel-v1-coach`), optional artifacts under `docs/qe-analysis/` |
-| **Skills** | Router `qe-analysis` + five mode skills + `qe-automate` for test writing |
-| **MCP server** | Phased playbook in one call; repo scan hints under `REPO_ROOT`; Phase E validate/save — **no API key** |
-| **Not included** | In-server LLM, API keys, hosted inference |
-
-**This server does not call any external LLM API.**
-
-## MCP tools
-
-**Primary (start here):**
-
-| Tool | Purpose |
-|------|---------|
-| `qe_intel_refinement` | Guided story grooming |
-| `qe_intel_uat` | Guided release gate |
-| `qe_intel_repo_uat` | Guided repo charter |
-| `qe_intel_bug` | Guided incident analysis |
-| `qe_intel_regression` | Guided retest scope |
-| `qe_intel_review` | Draft quality check |
-
-**Phase E (optional):** `qe_validate_report`, `qe_save_report`, `qe_save_markdown`, `qe_get_system_prompt`, `qe_get_json_schema`
-
-No API key. Coach-tier success = better QE in chat, not a file on disk.
-
-## Architecture
-
-```mermaid
-sequenceDiagram
-  participant User
-  participant Cursor
-  participant Intel as qe_intel_uat
-  participant FS as docs_qe_analysis
-
-  User->>Cursor: UAT this release
-  Cursor->>Intel: qe_intel_uat (coach)
-  Intel-->>Cursor: Phases A-D playbook + repo hints
-  Cursor->>Cursor: explore, scenarios, GO/NO-GO in chat
-  opt user asks to save
-    Cursor->>Intel: validate + save
-    Intel->>FS: json + html
-  end
+```bash
+npx @qe-craft/mcp init
 ```
 
-## Quickstart
+---
 
-**Requirements:** Node 22+ (for `node --env-file` and built-in test runner).
+## The problem this solves
 
-### Install via npx (published package)
+QA knowledge doesn't scale. One QE engineer, ten dev teams, every story groomed without them.
 
-After [`qe-intel-mcp` is on npm](https://www.npmjs.com/package/qe-intel-mcp), add to `~/.cursor/mcp.json`:
+Most teams either skip QE analysis entirely or wait for a review that comes too late to change anything. Not because they don't care — because the friction is too high.
+
+QE Craft puts senior QE thinking directly inside Cursor (and any MCP-compatible IDE), so developers and QA can get a proper risk analysis, test scenarios, and a GO/NO-GO recommendation without leaving their editor, without an API key, and without reading a QE handbook first.
+
+---
+
+## How it works
+
+There is no AI inside the MCP server. No external API calls from MCP. The server does not add a **second** cloud LLM hop — your IDE's own AI does the reasoning; see **[`docs/data-handling.md`](docs/data-handling.md)** for what stays local vs what your IDE provider handles.
+
+QE Craft gives that model the QE framework to reason with — skills that turn a vague "analyse this story" into structured senior QE analysis every time.
+
+```
+Developer types:   "refinement on this story: [pastes ticket]"
+Cursor calls:      qe_intel_refinement
+MCP returns:       phased playbook — what to look for, where to look
+Cursor runs:       risks, gaps, test scenarios, questions — in chat
+Optional:          save as HTML report to docs/qe-analysis/
+```
+
+---
+
+## Install
+
+**Step 1 — Add the MCP server to Cursor**
+
+In `~/.cursor/mcp.json`:
 
 ```json
 {
   "mcpServers": {
-    "qe-intel": {
+    "qe-craft": {
       "command": "npx",
-      "args": ["-y", "qe-intel-mcp@latest"],
+      "args": ["-y", "@qe-craft/mcp@latest"],
       "env": {
-        "REPO_ROOT": "/ABSOLUTE/PATH/to/your/target-repo"
+        "REPO_ROOT": "/absolute/path/to/your/repo"
       }
     }
   }
 }
 ```
 
-Restart Cursor. **No API keys.**
-
-**Migrating from `qe-refinement`:** rename the MCP key to `qe-intel` and use `qe-intel-mcp@latest` in `args`. Tool names (`qe_validate_report`, etc.) are unchanged.
-
-### Install the skill (`init`)
+**Step 2 — Install the QE skills**
 
 ```bash
-npx qe-intel-mcp init
-# team repo: npx qe-intel-mcp init --project /absolute/path/to/repo
-# preview:  npx qe-intel-mcp init --dry-run
+npx @qe-craft/mcp init
 ```
 
-Copies **seven skills** into `~/.cursor/skills/` (or project `.cursor/skills/`). Restart Cursor again.
+This copies seven QE skills into `~/.cursor/skills/`. Restart Cursor.
 
-**Example prompts:** [`qe-intel-mcp/README.md`](qe-intel-mcp/README.md).
+That's it. No API key. No account. No config files to fill in.
 
-### Install from source (this repo)
+MCP tool names (`qe_intel_*`, etc.) are unchanged — only the npm package and MCP server key use the `qe-craft` / `@qe-craft/mcp` IDs.
 
-```bash
-cd qe-intel-mcp
-npm install
-npm run build
-test -f dist/server.js && echo "Build OK"
-```
+---
 
-Optional: `REPO_ROOT=/absolute/path/to/target-repo` so analyses save under that repo’s `docs/qe-analysis/` (defaults to process cwd).
+## What you get
 
-### Cursor MCP — local clone (`~/.cursor/mcp.json`)
+Five analysis modes, triggered by natural language in Cursor:
 
-Use **absolute paths** on your machine. **No API keys.**
+| Say something like... | Mode | What it does |
+|---|---|---|
+| "Refine this story" | `REFINEMENT` | Gaps, missing AC, risks before dev starts |
+| "Is this ready to release?" | `UAT` | GO/NO-GO with execution plan |
+| "No ticket, validate this feature area" | `REPO_UAT` | Codebase-grounded charter |
+| "Why did this bug happen?" | `BUG` | Root cause + missed coverage |
+| "What do I need to retest?" | `REGRESSION` | Impact scope + automation to run |
 
-```json
-{
-  "mcpServers": {
-    "qe-intel": {
-      "command": "node",
-      "args": [
-        "/ABSOLUTE/PATH/qe-intelligence-suite/qe-intel-mcp/dist/cli.js"
-      ],
-      "env": {
-        "REPO_ROOT": "/ABSOLUTE/PATH/to/your/target-repo"
-      }
-    }
-  }
-}
-```
+**Also:** `qe-automate` — Cursor skill for test writing (no MCP tool; pairs with the modes above).
 
-Restart Cursor after saving.
+Output is in chat by default. Ask Cursor to save it and you get a tabbed HTML report under `docs/qe-analysis/` — structured, shareable, linkable.
 
-Publish checklist for maintainers: [`qe-intel-mcp/README.md`](qe-intel-mcp/README.md#publishing-maintainers).
+---
 
-**Local dev** (stdio):
+## Sample output
 
-```bash
-cd qe-intel-mcp && npm run dev
-```
+Before you install anything — see what the output actually looks like:
 
-### Guided run (default)
-
-| Step | Owner | Action |
-|------|--------|--------|
-| 1 | Cursor | Match intent → skill → **`qe_intel_<mode>`** with ticket/context (`output_tier: coach`) |
-| 2 | MCP | Return phased playbook (A–D), repo **where to look** hints under `REPO_ROOT`, input gaps if thin |
-| 3 | Cursor | Execute phases in chat — questions, risks, scenario table, GO/NO-GO / AC gaps |
-| 4 | Cursor (optional) | **`qe_intel_review`** on draft |
-| 5 | MCP (optional) | Phase E: validate + save only if user wants files |
-
-See `qe-intel-mcp/skills/shared/intel-run.md`. Full 11-section / JSON contract: `output_tier: full` + `artifact-run.md`.
-
-### Output artifact table
-
-| `output_format` | Files written (`save_file=true`) | MCP chat body |
-|-----------------|----------------------------------|---------------|
-| `markdown` (default) | `docs/qe-analysis/qe-analysis-{MODE}-{slug}-{date}.md` only | Full markdown or summary + `Saved to:` footer |
-| `json` | Same stem: `.json` (envelope) + `.html` — **no** `.md` | Short summary (mode, confidence, risks, scenario counts) + paths — not full HTML |
-| JSON parse/validate failure | Optional `.raw.txt` only if wired — not default | Error list + path to raw file when saved |
-
-Collision suffix (`-2`, `-3`) applies to the **stem** before extension; sibling `.json` and `.html` share one stem.
-
-Regenerate committed v2 samples after schema or renderer changes:
-
-```bash
-cd qe-intel-mcp && npm run build && node scripts/write-v2-samples.mjs
-```
-
-## Sample outputs (Phase E artifacts)
-
-Committed examples (sanitized, fictional scope):
-
-**v1 — Markdown** ([`docs/qe-analysis/samples/`](docs/qe-analysis/samples/)):
-
+**Markdown (v1):**
 - [REFINEMENT — promo code at checkout](docs/qe-analysis/samples/qe-analysis-REFINEMENT-promo-code-checkout-2026-05-18.md)
 - [UAT — checkout promo flow](docs/qe-analysis/samples/qe-analysis-UAT-checkout-promo-flow-2026-05-18.md)
 
-**v2 — JSON envelope + tabbed HTML** ([`docs/qe-analysis/samples/v2/`](docs/qe-analysis/samples/v2/)) — hybrid validate/save path:
+**Tabbed HTML report (v2):** open in browser for the full experience:
+- [REFINEMENT — promo code at checkout (HTML)](docs/qe-analysis/samples/v2/qe-analysis-REFINEMENT-promo-code-at-checkout-2026-05-21.html)
+- [UAT — checkout promo flow (HTML)](docs/qe-analysis/samples/v2/qe-analysis-UAT-checkout-promo-flow-2026-05-21.html)
 
-- [REFINEMENT — promo code at checkout (JSON)](docs/qe-analysis/samples/v2/qe-analysis-REFINEMENT-promo-code-at-checkout-2026-05-21.json) · [HTML](docs/qe-analysis/samples/v2/qe-analysis-REFINEMENT-promo-code-at-checkout-2026-05-21.html)
-- [UAT — checkout promo flow (JSON)](docs/qe-analysis/samples/v2/qe-analysis-UAT-checkout-promo-flow-2026-05-21.json) · [HTML](docs/qe-analysis/samples/v2/qe-analysis-UAT-checkout-promo-flow-2026-05-21.html)
+---
 
-Open the `.html` files in a browser for the tabbed report (includes `validationWarnings` banner when guards fire).
+## Why no API key?
 
-## Environment variables
+Other AI QE tools route your code through their servers or require you to bring an Anthropic/OpenAI key. That creates trust issues — especially in companies cautious about what leaves the network.
 
-| Variable | Required? | Purpose |
-|----------|-----------|---------|
-| `REPO_ROOT` | No | Absolute path to the repo where `docs/qe-analysis/` should be written (defaults to MCP process cwd) |
+QE Craft has no server-side AI. MCP validates and saves locally; generation stays in the IDE model your company already approved for Cursor or Copilot. Details: **[`docs/data-handling.md`](docs/data-handling.md)**.
 
-There are **no** `ANTHROPIC_MODEL`, `ANTHROPIC_MAX_TOKENS`, or API-key variables for this server — model choice and token limits are entirely your **IDE agent’s** provider. See [`.env.example`](qe-intel-mcp/.env.example).
+---
 
-## Prompt hygiene
+## What's in the repo
 
-Prompts and bundled skills should stay **vendor-neutral** (no employer-specific product names). When coaching rules change, update `qe-intel-mcp/src/intel/` and `src/core/prompts/`, sync skills under `qe-intel-mcp/skills/`, run `npx qe-intel-mcp init --force`, and bump `PROMPT_VERSION` in `src/core/constants.ts`.
+```
+mcp/                   MCP server — install once, use everywhere
+docs/qe-analysis/      Sample outputs (committed, so you can see before installing)
+```
+
+Package README (tools, architecture, maintainer publish): [`mcp/README.md`](mcp/README.md).
+
+---
+
+## Philosophy
+
+Most AI testing tools compete on feature count. QE Craft competes on adoption.
+
+A tool that requires four steps to install will be skipped. A tool that requires an API key will be blocked by security. A tool with 60 agents will confuse the developer who just wants to know if a story is testable.
+
+One command. Zero keys. Works in the IDE you already have.
+
+---
+
+## Built by
+
+An SDET actively piloting contract testing and AI-assisted QE workflows in production — not a theoretical implementation.
+
+[Portfolio](https://www.arjunjhawar.dev) · [npm](https://www.npmjs.com/package/@qe-craft/mcp)

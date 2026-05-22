@@ -75,8 +75,8 @@ describe('buildInitPlan and executeInit', () => {
 describe('formatMcpJsonSnippet', () => {
   it('includes npx and REPO_ROOT placeholder', () => {
     const snippet = formatMcpJsonSnippet('/my/repo');
-    assert.ok(snippet.includes('"qe-intel"'));
-    assert.ok(snippet.includes('qe-intel-mcp@latest'));
+    assert.ok(snippet.includes('"qe-craft"'));
+    assert.ok(snippet.includes('@qe-craft/mcp@latest'));
     assert.ok(snippet.includes('"/my/repo"'));
   });
 });
@@ -84,6 +84,6 @@ describe('formatMcpJsonSnippet', () => {
 describe('getPackageRoot', () => {
   it('resolves to package directory containing skills/', () => {
     const root = getPackageRoot();
-    assert.ok(root.endsWith('qe-intel-mcp'));
+    assert.ok(root.endsWith('mcp'));
   });
 });

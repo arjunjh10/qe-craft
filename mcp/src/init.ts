@@ -127,9 +127,9 @@ async function pathExists(path: string): Promise<boolean> {
 export function formatMcpJsonSnippet(repoRootPlaceholder = '/absolute/path/to/your/target-repo'): string {
   return `{
   "mcpServers": {
-    "qe-intel": {
+    "qe-craft": {
       "command": "npx",
-      "args": ["-y", "qe-intel-mcp@latest"],
+      "args": ["-y", "@qe-craft/mcp@latest"],
       "env": {
         "REPO_ROOT": "${repoRootPlaceholder}"
       }
@@ -142,7 +142,7 @@ export async function executeInit(plan: InitPlan, options: InitOptions): Promise
   for (const target of plan.targets) {
     if (!(await pathExists(target.sourceSkillPath))) {
       throw new Error(
-        `Bundled skill not found at ${target.sourceSkillPath}. Reinstall qe-intel-mcp.`,
+        `Bundled skill not found at ${target.sourceSkillPath}. Reinstall @qe-craft/mcp.`,
       );
     }
 
@@ -156,7 +156,7 @@ export async function executeInit(plan: InitPlan, options: InitOptions): Promise
   }
 
   if (options.dryRun) {
-    console.log('[dry-run] Would install QE Intel skills:');
+    console.log('[dry-run] Would install QE Craft skills:');
     for (const target of plan.targets) {
       console.log(`  ${target.skillName}`);
       console.log(`    from: ${target.sourceSkillPath}`);
@@ -176,8 +176,8 @@ export function printInitSuccess(plan: InitPlan): void {
   const repoHint =
     plan.scope === 'project' ? plan.project! : '/absolute/path/to/your/target-repo';
 
-  console.log(`Installed ${plan.targets.length} QE Intel skills (${plan.scope})`);
-  console.log(`  package: qe-intel-mcp@${plan.packageVersion}`);
+  console.log(`Installed ${plan.targets.length} QE Craft skills (${plan.scope})`);
+  console.log(`  package: @qe-craft/mcp@${plan.packageVersion}`);
   console.log(`  prompt:  ${plan.promptVersion}`);
   for (const t of plan.targets) {
     console.log(`  - ${t.skillName} → ${t.destSkillPath}`);
@@ -194,10 +194,10 @@ export function printInitSuccess(plan: InitPlan): void {
 }
 
 export function printInitHelp(): void {
-  console.log(`qe-intel-mcp init — install QE Intel Cursor skills from this package
+  console.log(`@qe-craft/mcp init — install QE Craft Cursor skills from this package
 
 Usage:
-  npx qe-intel-mcp init [options]
+  npx @qe-craft/mcp init [options]
 
 Options:
   --project <path>  Install into <path>/.cursor/skills/<skill-name>/ (team repos)

@@ -407,7 +407,7 @@ export function renderReportHtml(envelope: QeReportEnvelope): string {
 <body>
   <header>
     <h1>${title}</h1>
-    <p class="muted">QE Intelligence Suite · ${escapeHtml(report.mode)}</p>
+    <p class="muted">QE Craft · ${escapeHtml(report.mode)}</p>
   </header>
   ${renderWarningsBanner(validationWarnings)}
   <div role="tablist" aria-label="Report sections">
