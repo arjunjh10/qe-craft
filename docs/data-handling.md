@@ -13,9 +13,9 @@ This page explains **what leaves your machine** when you use QE Craft, so securi
 ```mermaid
 flowchart TB
   Dev[Developer]
-  CursorLLM[IDE LLM e.g. Cursor]
-  MCP[@qe-craft/mcp]
-  Disk[docs/qe-analysis/ on disk]
+  CursorLLM["IDE LLM e.g. Cursor"]
+  MCP["@qe-craft/mcp"]
+  Disk["docs/qe-analysis/ on disk"]
   Dev -->|chat, repo read| CursorLLM
   Dev -->|MCP tool calls| MCP
   MCP -->|validate, render, save| Disk
