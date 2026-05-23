@@ -224,3 +224,9 @@ Prompts and bundled skills should stay **vendor-neutral** (no employer-specific 
 ```bash
 npm install && npm run check && npm test
 ```
+
+## Built by
+
+An SDET actively piloting contract testing and AI-assisted QE workflows in production — not a theoretical implementation.
+
+[Portfolio](https://www.arjunjhawar.dev)
