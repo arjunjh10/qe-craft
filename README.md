@@ -132,6 +132,6 @@ One command. Zero keys. Works in the IDE you already have.
 
 ## Built by
 
-An SDET actively piloting contract testing and AI-assisted QE workflows in production — not a theoretical implementation.
+An SDET actively piloting AI-assisted QE workflows in production — not a theoretical implementation.
 
 [Portfolio](https://www.arjunjhawar.dev) · [npm](https://www.npmjs.com/package/@qe-craft/mcp)
