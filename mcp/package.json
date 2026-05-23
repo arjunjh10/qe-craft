@@ -1,6 +1,6 @@
 {
   "name": "@qe-craft/mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "QE Craft MCP — guided qe_intel_* runs for copilot coaching; optional validate/save — no API key",
   "type": "module",
   "main": "dist/server.js",
@@ -13,6 +13,7 @@
   "files": [
     "dist",
     "skills",
+    "docs",
     "README.md",
     "LICENSE"
   ],

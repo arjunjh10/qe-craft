@@ -70,7 +70,6 @@ Installs: `qe-analysis`, `qe-refinement`, `qe-uat-gate`, `qe-repo-charter`, `qe-
 | `qe_intel_regression` | Guided retest scope |
 | `qe_intel_review` | Draft quality check |
 
-**Phase E (optional):** `qe_validate_report`, `qe_save_report`, `qe_save_markdown`, `qe_get_system_prompt`, `qe_get_json_schema`
 
 No API key. Coach-tier success = better QE in chat, not a file on disk.
 
@@ -78,22 +77,17 @@ No API key. Coach-tier success = better QE in chat, not a file on disk.
 
 ## Architecture
 
-```mermaid
-sequenceDiagram
-  participant User
-  participant Cursor
-  participant Intel as qe_intel_uat
-  participant FS as docs_qe_analysis
+Coach-tier UAT example: MCP returns the phased playbook; Cursor explores the repo and reasons in chat. Save to disk only when asked.
 
-  User->>Cursor: UAT this release
-  Cursor->>Intel: qe_intel_uat (coach)
-  Intel-->>Cursor: Phases A-D playbook + repo hints
-  Cursor->>Cursor: explore, scenarios, GO/NO-GO in chat
-  opt user asks to save
-    Cursor->>Intel: validate + save
-    Intel->>FS: json + html
-  end
-```
+<p align="center">
+  <img
+    src="./docs/architecture.svg"
+    alt="Sequence diagram: User asks Cursor for UAT; Cursor calls qe_intel_uat (coach); MCP returns Phases A–D and repo hints; Cursor explores and decides GO/NO-GO in chat; optionally validate and save json/html under docs/qe-analysis"
+    width="920"
+  />
+</p>
+
+<p align="center"><sub>Regenerate from <code>docs/architecture.mmd</code> with <code>npx -y @mermaid-js/mermaid-cli -i docs/architecture.mmd -o docs/architecture.svg -b transparent</code></sub></p>
 
 ---
 
