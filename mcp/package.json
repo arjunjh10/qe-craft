@@ -29,6 +29,8 @@
     "prepack": "npm run build",
     "prepublishOnly": "npm run check && npm run test",
     "pack:check": "npm run build && npm pack --dry-run",
+    "build:plugin": "node scripts/build-plugin.mjs",
+    "verify:plugin": "node scripts/verify-plugin-bundle.mjs",
     "start": "node dist/server.js",
     "dev": "node --env-file=.env ./node_modules/tsx/dist/cli.mjs src/server.ts"
   },

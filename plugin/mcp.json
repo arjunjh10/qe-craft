@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "qe-craft": {
+      "command": "npx",
+      "args": ["-y", "@qe-craft/mcp@latest"],
+      "env": {
+        "REPO_ROOT": "${workspaceFolder}"
+      }
+    }
+  }
+}

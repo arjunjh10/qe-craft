@@ -1,0 +1,11 @@
+{
+  "name": "qe-craft",
+  "description": "Senior QE coaching — guided qe_intel_* runs, optional validate/save. No API key.",
+  "version": "1.0.1",
+  "author": {
+    "name": "Arjun Jhawar"
+  },
+  "repository": "https://github.com/arjunjh10/qe-craft",
+  "license": "MIT",
+  "keywords": ["qe", "testing", "mcp", "quality-engineering"]
+}
