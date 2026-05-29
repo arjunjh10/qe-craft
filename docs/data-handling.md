@@ -2,9 +2,9 @@
 
 This page explains **what leaves your machine** when you use QE Craft, so security and compliance reviewers can approve or reject the workflow in one read.
 
-**Short answer:** The MCP server does **not** call any external LLM API. Analysis runs in your IDE (Cursor skill); MCP validates JSON, renders HTML, and writes files **locally**. You do **not** need an Anthropic or other model API key for MCP.
+**Short answer:** The MCP server does **not** call any external LLM API. Analysis runs in your IDE agent (via QE skills); MCP validates JSON, renders HTML, and writes files **locally**. You do **not** need an Anthropic or other model API key for MCP.
 
-**Honest caveat:** Repo exploration and report **generation** still use your IDE’s AI assistant. That is a separate data path governed by your IDE vendor (e.g. Cursor), not by this MCP process.
+**Honest caveat:** Repo exploration and report **generation** still use your IDE’s AI assistant. That is a separate data path governed by your IDE vendor, not by this MCP process.
 
 ---
 
@@ -13,10 +13,10 @@ This page explains **what leaves your machine** when you use QE Craft, so securi
 ```mermaid
 flowchart TB
   Dev[Developer]
-  CursorLLM["IDE LLM e.g. Cursor"]
+  IDE_LLM["IDE LLM (your provider)"]
   MCP["@qe-craft/mcp"]
   Disk["docs/qe-analysis/ on disk"]
-  Dev -->|chat, repo read| CursorLLM
+  Dev -->|chat, repo read| IDE_LLM
   Dev -->|MCP tool calls| MCP
   MCP -->|validate, render, save| Disk
 ```
@@ -71,14 +71,14 @@ There is **no second model vendor** inside MCP — only your IDE provider for ge
 
 ### What goes to your IDE LLM
 
-When you follow the **`qe-analysis` skill** (recommended), the Cursor (or other) agent:
+When you follow the **`qe-analysis` skill** (recommended), the IDE agent:
 
 - Reads files in the workspace via IDE tools
 - Produces narrative or JSON analysis in the **chat thread**
 
 That content is handled under **your IDE provider’s** terms, retention, and enterprise agreement — the same as any coding assistant. This repo does not control that path.
 
-**Enterprise nuance:** Many teams already approve Cursor for source-aware assistance. QE Craft adds **local** validation and artifacts without a **second** cloud LLM call from the MCP server.
+**Enterprise nuance:** Many teams already approve their IDE for source-aware assistance. QE Craft adds **local** validation and artifacts without a **second** cloud LLM call from the MCP server.
 
 We do **not** claim “runs fully locally” or “your code never leaves your machine” when IDE analysis is in use — only that **MCP does not add another cloud inference hop**.
 

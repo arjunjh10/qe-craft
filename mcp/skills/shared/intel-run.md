@@ -16,7 +16,7 @@
 - **output_tier:** `full` — embed senior prompt + Phase E save rules.
 - **save_file:** default `false` for coach.
 
-## Phases (agent executes in Cursor)
+## Phases (agent executes in chat)
 
 1. **A — Understand** — repo scan hints + user questions if input thin.
 2. **B — Gaps & risks** — concrete, not generic NFR fluff.

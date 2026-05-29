@@ -102,7 +102,7 @@ Markdown table (include **every** user-listed unit; add inferred rows only when 
 
 - **\`scanned\`:** files read or grep-backed evidence collected in workspace for that unit.
 - **\`not_scanned\`:** in workspace but skipped (cap, time, or user priority)—say why.
-- **\`blocked\`:** not in Cursor workspace—**no** claimed file evidence; user links = unverified.
+- **\`blocked\`:** not in workspace—**no** claimed file evidence; user links = unverified.
 
 **Self-critique (when 11b is a full table):** exactly **3** bullets: (1) which repo gave **no** automation evidence, (2) which integration relied on an **assumption**, (3) which **layer** may still be blind after shallow passes.
 

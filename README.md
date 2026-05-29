@@ -15,7 +15,7 @@ QA knowledge doesn't scale. One QE engineer, ten dev teams, every story groomed 
 
 Most teams either skip QE analysis entirely or wait for a review that comes too late to change anything. Not because they don't care — because the friction is too high.
 
-QE Craft puts senior QE thinking directly inside Cursor (and any MCP-compatible IDE), so developers and QA can get a proper risk analysis, test scenarios, and a GO/NO-GO recommendation without leaving their editor, without an API key, and without reading a QE handbook first.
+QE Craft puts senior QE thinking directly inside your IDE, so developers and QA can get a proper risk analysis, test scenarios, and a GO/NO-GO recommendation without leaving their editor, without an API key, and without reading a QE handbook first.
 
 ---
 
@@ -27,9 +27,9 @@ QE Craft gives that model the QE framework to reason with — skills that turn a
 
 ```
 Developer types:   "refinement on this story: [pastes ticket]"
-Cursor calls:      qe_intel_refinement
+Agent calls:       qe_intel_refinement
 MCP returns:       phased playbook — what to look for, where to look
-Cursor runs:       risks, gaps, test scenarios, questions — in chat
+Agent runs:        risks, gaps, test scenarios, questions — in chat
 Optional:          save as HTML report to docs/qe-analysis/
 ```
 
@@ -37,9 +37,9 @@ Optional:          save as HTML report to docs/qe-analysis/
 
 ## Install
 
-**Step 1 — Add the MCP server to Cursor**
+**Step 1 — Add the MCP server**
 
-In `~/.cursor/mcp.json`:
+Add `@qe-craft/mcp` to your IDE's MCP configuration. Example server entry:
 
 ```json
 {
@@ -55,13 +55,15 @@ In `~/.cursor/mcp.json`:
 }
 ```
 
+Config file location varies by client (e.g. `~/.cursor/mcp.json`, `.vscode/mcp.json`, or a plugin `.mcp.json`). See your IDE's MCP documentation.
+
 **Step 2 — Install the QE skills**
 
 ```bash
 npx @qe-craft/mcp init
 ```
 
-This copies seven QE skills into `~/.cursor/skills/`. Restart Cursor.
+This copies seven QE skills into your user or project skills directory. Reload your IDE or start a new chat session.
 
 That's it. No API key. No account. No config files to fill in.
 
@@ -71,7 +73,7 @@ MCP tool names (`qe_intel_*`, etc.) are unchanged — only the npm package and M
 
 ## What you get
 
-Five analysis modes, triggered by natural language in Cursor:
+Five analysis modes, triggered by natural language in your IDE:
 
 | Say something like... | Mode | What it does |
 |---|---|---|
@@ -81,9 +83,9 @@ Five analysis modes, triggered by natural language in Cursor:
 | "Why did this bug happen?" | `BUG` | Root cause + missed coverage |
 | "What do I need to retest?" | `REGRESSION` | Impact scope + automation to run |
 
-**Also:** `qe-automate` — Cursor skill for test writing (no MCP tool; pairs with the modes above).
+**Also:** `qe-automate` — skill for test writing (no MCP tool; pairs with the modes above).
 
-Output is in chat by default. Ask Cursor to save it and you get a tabbed HTML report under `docs/qe-analysis/` — structured, shareable, linkable.
+Output is in chat by default. Ask the agent to save it and you get a tabbed HTML report under `docs/qe-analysis/` — structured, shareable, linkable.
 
 ---
 
@@ -105,7 +107,7 @@ Before you install anything — see what the output actually looks like:
 
 Other AI QE tools route your code through their servers or require you to bring an Anthropic/OpenAI key. That creates trust issues — especially in companies cautious about what leaves the network.
 
-QE Craft has no server-side AI. MCP validates and saves locally; generation stays in the IDE model your company already approved for Cursor or Copilot. Details: **[`docs/data-handling.md`](docs/data-handling.md)**.
+QE Craft has no server-side AI. MCP validates and saves locally; generation stays in the IDE model your company already approved (e.g. Copilot, Claude, or other MCP-capable assistants). Details: **[`docs/data-handling.md`](docs/data-handling.md)**.
 
 ---
 

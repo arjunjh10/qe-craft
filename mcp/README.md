@@ -1,17 +1,19 @@
 # QE Craft MCP (`@qe-craft/mcp`)
 
-**Guided QE in your copilot** — phased playbooks for people who are not full-time QEs. **No API key.** Inference stays in Cursor; MCP returns the director's script and optional artifact save.
+**Guided QE in your copilot** — phased playbooks for people who are not full-time QEs. **No API key.** Inference stays in your IDE agent; MCP returns the director's script and optional artifact save.
 
-Pair with **seven Cursor skills** (`npx @qe-craft/mcp init`): router + five mode skills + `qe-automate` for test writing.
+Pair with **seven QE skills** (`npx @qe-craft/mcp init`): router + five mode skills + `qe-automate` for test writing.
 
 ## Requirements
 
 - Node.js **22+**
-- Cursor (stdio MCP)
+- MCP-compatible IDE with stdio transport
 
 ## Quick setup
 
-### 1. MCP — `~/.cursor/mcp.json`
+### 1. MCP server config
+
+Add to your IDE's MCP settings. Example entry (path varies by client — e.g. `~/.cursor/mcp.json`, `.vscode/mcp.json`, plugin `.mcp.json`):
 
 ```json
 {
@@ -37,7 +39,9 @@ npx @qe-craft/mcp@latest init --force   # upgrade
 
 Installs: `qe-analysis`, `qe-refinement`, `qe-uat-gate`, `qe-repo-charter`, `qe-incident`, `qe-regression-impact`, `qe-automate`.
 
-### 3. Restart Cursor
+### 3. Reload your IDE
+
+Start a new chat session or reload your IDE so MCP and skills are picked up.
 
 | Variable | Purpose |
 |----------|---------|
@@ -77,12 +81,12 @@ No API key. Coach-tier success = better QE in chat, not a file on disk.
 
 ## Architecture
 
-Coach-tier UAT example: MCP returns the phased playbook; Cursor explores the repo and reasons in chat. Save to disk only when asked.
+Coach-tier UAT example: MCP returns the phased playbook; the IDE agent explores the repo and reasons in chat. Save to disk only when asked.
 
 <p align="center">
   <img
     src="./docs/architecture.svg"
-    alt="Sequence diagram: User asks Cursor for UAT; Cursor calls qe_intel_uat (coach); MCP returns Phases A–D and repo hints; Cursor explores and decides GO/NO-GO in chat; optionally validate and save json/html under docs/qe-analysis"
+    alt="Sequence diagram: User asks IDE agent for UAT; agent calls qe_intel_uat (coach); MCP returns Phases A–D and repo hints; agent explores and decides GO/NO-GO in chat; optionally validate and save json/html under docs/qe-analysis"
     width="920"
   />
 </p>
@@ -113,10 +117,10 @@ Do not save files unless I ask.
 
 | Step | Owner | Action |
 |------|--------|--------|
-| 1 | Cursor | Match intent → skill → **`qe_intel_<mode>`** with ticket/context (`output_tier: coach`) |
+| 1 | IDE agent | Match intent → skill → **`qe_intel_<mode>`** with ticket/context (`output_tier: coach`) |
 | 2 | MCP | Return phased playbook (A–D), repo **where to look** hints under `REPO_ROOT`, input gaps if thin |
-| 3 | Cursor | Execute phases in chat — questions, risks, scenario table, GO/NO-GO / AC gaps |
-| 4 | Cursor (optional) | **`qe_intel_review`** on draft |
+| 3 | IDE agent | Execute phases in chat — questions, risks, scenario table, GO/NO-GO / AC gaps |
+| 4 | IDE agent (optional) | **`qe_intel_review`** on draft |
 | 5 | MCP (optional) | Phase E: validate + save only if user wants files |
 
 See `skills/shared/intel-run.md`. Full 11-section / JSON contract: `output_tier: full` + `artifact-run.md`.
@@ -173,7 +177,9 @@ test -f dist/server.js && echo "Build OK"
 
 Optional: `REPO_ROOT=/absolute/path/to/target-repo` so analyses save under that repo's `docs/qe-analysis/` (defaults to process cwd).
 
-### Cursor MCP — local clone (`~/.cursor/mcp.json`)
+### Local clone MCP config (example)
+
+Use **absolute paths** on your machine. **No API keys.** Config file location depends on your IDE; example for Cursor-style hosts:
 
 Use **absolute paths** on your machine. **No API keys.**
 
@@ -193,7 +199,7 @@ Use **absolute paths** on your machine. **No API keys.**
 }
 ```
 
-Restart Cursor after saving.
+Reload your IDE after saving the MCP config.
 
 **Local dev** (stdio):
 
@@ -215,7 +221,7 @@ Prompts and bundled skills should stay **vendor-neutral** (no employer-specific 
 2. Confirm version in `package.json` and changelog intent.
 3. `npm login` (org **`qe-craft`** for scoped publish).
 4. `npm publish --access public` from `mcp/` (`prepublishOnly` runs `check` + `test`).
-5. Smoke: `npx @qe-craft/mcp@latest init --dry-run` and connect MCP in Cursor as `qe-craft`.
+5. Smoke: `npx @qe-craft/mcp@latest init --dry-run` and connect MCP in your IDE as `qe-craft`.
 
 ---
 

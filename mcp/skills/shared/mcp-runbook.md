@@ -4,14 +4,14 @@
 
 This file documents the **Phase E / debug** utilities (`qe_get_system_prompt`, `qe_validate_report`, etc.). No API key required.
 
-**Important:** The MCP server does **not** read the repository. Only the Cursor agent explores via grep/read and passes citations in tool arguments.
+**Important:** The MCP server does **not** read the repository. Only the IDE agent explores via grep/read and passes citations in tool arguments.
 
 ```mermaid
 flowchart LR
-  Explore[1 Explore repo in Cursor]
+  Explore[1 Explore repo in workspace]
   Evidence[2 Build evidence_context]
   Prompt[3 qe_get_system_prompt]
-  Analyze[4 Analyze in Cursor thread]
+  Analyze[4 Analyze in IDE thread]
   Out{Output format?}
   Validate[5 qe_validate_report]
   SaveJson[6 qe_save_report]
@@ -22,7 +22,7 @@ flowchart LR
   Out -->|markdown| SaveMd
 ```
 
-## 1 — Explore the repository (Cursor only)
+## 1 — Explore the repository
 
 Before analysis, gather **evidence** in the workspace(s):
 
@@ -65,7 +65,7 @@ Alternatively, use the **embedded instructions in the skill** for markdown — t
 
 For **JSON** output, also call **`qe_get_json_schema`** and follow its schema in the next step.
 
-## 4 — Analyze in the Cursor thread
+## 4 — Analyze in the IDE thread
 
 Perform the full Senior QE analysis **here** (not inside MCP):
 
@@ -119,7 +119,7 @@ Always include:
 
 | Claim | Allowed? |
 |-------|----------|
-| "I read `src/...` in the repo" | Yes — **Cursor** exploration only |
+| "I read `src/...` in the repo" | Yes — **agent** exploration only |
 | "MCP scanned the repository" | **No** — MCP only receives what you pass in args |
 | "Evidence was verified in workspace" | Yes, when you actually read/grepped those paths |
 | Paths in scenarios without workspace access | Mark `blocked` in section 11 / `assumed` evidence type |

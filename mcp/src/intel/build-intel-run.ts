@@ -190,7 +190,7 @@ export async function buildIntelRun(
       ? '- User got clearer risks, questions, and a short scenario table in **chat**.\n- Optional file save only if they asked.\n- Do **not** call validate/save unless Phase E applies.'
       : '- Full report produced and saved under `docs/qe-analysis/` when `save_file` is true.\n- Validate JSON before save.',
     '',
-    `**MCP does not read the repo** — you explored under \`${where.repoRoot}\` and must cite real paths.`,
+    `**MCP does not call external LLMs** — explore the repo via agent tools under \`${where.repoRoot}\` and cite real paths.`,
   ];
 
   return sections.join('\n');

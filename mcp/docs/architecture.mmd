@@ -1,14 +1,14 @@
 sequenceDiagram
   participant User
-  participant Cursor
+  participant IDEAgent as IDE Agent
   participant Intel as qe_intel_uat
   participant FS as docs_qe_analysis
 
-  User->>Cursor: UAT this release
-  Cursor->>Intel: qe_intel_uat (coach)
-  Intel-->>Cursor: Phases A-D playbook + repo hints
-  Cursor->>Cursor: explore, scenarios, GO/NO-GO in chat
+  User->>IDEAgent: UAT this release
+  IDEAgent->>Intel: qe_intel_uat (coach)
+  Intel-->>IDEAgent: Phases A-D playbook + repo hints
+  IDEAgent->>IDEAgent: explore, scenarios, GO/NO-GO in chat
   opt user asks to save
-    Cursor->>Intel: validate + save
+    IDEAgent->>Intel: validate + save
     Intel->>FS: json + html
   end

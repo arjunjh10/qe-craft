@@ -28,7 +28,7 @@ import { intelToolSchemas } from './intel/schemas.js';
 
 function registerIntelTools(server: McpServer): void {
   const intelDescription =
-    'Start a guided QE Intel run (coach-first). Returns phased playbook for Cursor to execute. No API key.';
+    'Start a guided QE Intel run (coach-first). Returns phased playbook for the agent to execute. No API key.';
 
   server.registerTool(
     'qe_intel_refinement',
