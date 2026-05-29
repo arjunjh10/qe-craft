@@ -3,7 +3,13 @@
 Your QE expertise, inside every developer's IDE.  
 No API keys. No new accounts. No extra tools to learn.
 
+**Install:** pick your IDE in **[`docs/install.md`](docs/install.md)** — Cursor / Claude plugin (recommended), VS Code MCP, or manual setup.
+
 ```bash
+# VS Code / Copilot — writes .vscode/mcp.json
+npx @qe-craft/mcp setup --ide vscode --project /path/to/your/repo
+
+# Cursor manual — copies skills (plugin install is preferred)
 npx @qe-craft/mcp init
 ```
 
@@ -37,37 +43,16 @@ Optional:          save as HTML report to docs/qe-analysis/
 
 ## Install
 
-**Step 1 — Add the MCP server**
+| Your IDE | Fastest path |
+|----------|--------------|
+| **Cursor** | [Cursor Marketplace](https://cursor.com/marketplace) plugin — skills + MCP bundled |
+| **Claude Code** | [Claude plugin directory](https://claude.ai/settings/plugins) — skills namespaced `/qe-craft:…` |
+| **VS Code / Copilot** | `npx @qe-craft/mcp setup --ide vscode --project <repo>` |
+| **Other MCP client** | Add MCP snippet from install doc |
 
-Add `@qe-craft/mcp` to your IDE's MCP configuration. Example server entry:
+Full matrix, config paths, `REPO_ROOT`, troubleshooting, and power-user CLI: **[`docs/install.md`](docs/install.md)**.
 
-```json
-{
-  "mcpServers": {
-    "qe-craft": {
-      "command": "npx",
-      "args": ["-y", "@qe-craft/mcp@latest"],
-      "env": {
-        "REPO_ROOT": "/absolute/path/to/your/repo"
-      }
-    }
-  }
-}
-```
-
-Config file location varies by client (e.g. `~/.cursor/mcp.json`, `.vscode/mcp.json`, or a plugin `.mcp.json`). See your IDE's MCP documentation.
-
-**Step 2 — Install the QE skills**
-
-```bash
-npx @qe-craft/mcp init
-```
-
-This copies seven QE skills into your user or project skills directory. Reload your IDE or start a new chat session.
-
-That's it. No API key. No account. No config files to fill in.
-
-MCP tool names (`qe_intel_*`, etc.) are unchanged — only the npm package and MCP server key use the `qe-craft` / `@qe-craft/mcp` IDs.
+No API key. No account. MCP tool names (`qe_intel_*`, etc.) are unchanged — only the npm package and MCP server key use the `qe-craft` / `@qe-craft/mcp` IDs.
 
 ---
 
@@ -115,6 +100,8 @@ QE Craft has no server-side AI. MCP validates and saves locally; generation stay
 
 ```
 mcp/                   MCP server — install once, use everywhere
+plugin/                Cursor + Claude plugin bundle (skills + mcp.json)
+docs/install.md        Per-IDE install matrix (canonical)
 docs/qe-analysis/      Sample outputs (committed, so you can see before installing)
 ```
 
@@ -128,7 +115,7 @@ Most AI testing tools compete on feature count. QE Craft competes on adoption.
 
 A tool that requires four steps to install will be skipped. A tool that requires an API key will be blocked by security. A tool with 60 agents will confuse the developer who just wants to know if a story is testable.
 
-One command. Zero keys. Works in the IDE you already have.
+One doc page. Zero keys. Works in the IDE you already have.
 
 ---
 
